@@ -9,7 +9,7 @@
 			</el-col>
 			<el-col :span="10">
 				<div class="tools" @click.prevent="collapse">
-					<i :class="collapsed?'el-icon-tickets':'el-icon-notebook-2'"></i>
+					<i :class="collapsed?'el-icon-notebook-2':'el-icon-tickets'"></i>
 				</div>
 			</el-col>
 			<el-col :span="4" class="userinfo">

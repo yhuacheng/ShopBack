@@ -641,8 +641,8 @@
 						params.append('Price', _this.editForm.price)
 						params.append('Discount', _this.editForm.discount)
 						params.append('PresentPrice', _this.nowPrice)
-						params.append('Commission', _this.editForm.commission)
-						params.append('Integral', _this.editForm.integral)
+						params.append('Commission', Number(_this.editForm.commission))
+						params.append('Integral', Number(_this.editForm.integral))
 						params.append('ProductDescribe', _this.editForm.description)
 						params.append('UserId', _this.editForm.code)
 						_this.fileListAdd.map(item => {
@@ -684,8 +684,8 @@
 						params.append('Price', _this.editForm.price)
 						params.append('Discount', _this.editForm.discount)
 						params.append('PresentPrice', _this.nowPrice)
-						params.append('Commission', _this.editForm.commission)
-						params.append('Integral', _this.editForm.integral)
+						params.append('Commission', Number(_this.editForm.commission))
+						params.append('Integral', Number(_this.editForm.integral))
 						params.append('ProductDescribe', _this.editForm.description)
 						params.append('UserId', _this.editForm.code)
 						_this.fileListAdd.map(item => {
