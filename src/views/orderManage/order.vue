@@ -34,26 +34,41 @@
 			<el-table-column type="selection" align="center"></el-table-column>
 			<el-table-column type="index" label="#" align="center"></el-table-column>
 			<el-table-column prop="No" label="订单编号" align="center"></el-table-column>
-			<el-table-column prop="disType" label="商品编号" align="center"></el-table-column>
+			<el-table-column prop="disType" label="商品图" align="center"></el-table-column>
+			<el-table-column prop="disType" label="商品名称" align="center"></el-table-column>
 			<el-table-column prop="country" label="买家账号" align="center"></el-table-column>
-			<el-table-column prop="type" label="购买数量" align="center"></el-table-column>
 			<el-table-column prop="shop" label="购买价格" align="center"></el-table-column>
+			<el-table-column prop="shop" label="佣金" align="center"></el-table-column>
 			<el-table-column prop="shop" label="下单时间" align="center"></el-table-column>
 			<el-table-column prop="ASIN" label="亚马逊单号" align="center"></el-table-column>
-			<el-table-column prop="ASIN" label="评价" align="center"></el-table-column>
+			<el-table-column prop="ASIN" label="购买时间" align="center"></el-table-column>
+			<el-table-column prop="ASIN" label="亚马逊评价" align="center"></el-table-column>
+			<el-table-column prop="ASIN" label="评价截图" align="center"></el-table-column>
+			<el-table-column prop="ASIN" label="评价时间" align="center"></el-table-column>
 			<el-table-column prop="State" label="状态" align="center">
 				<template slot-scope="scope">
-					<el-tag size="small" type="info" v-if="scope.row.State===1">待购买</el-tag>
-					<el-tag size="small" type="primary" v-if="scope.row.State===2">待确认购买</el-tag>
-					<el-tag size="small" type="warning" v-if="scope.row.State===3">待评价</el-tag>
-					<el-tag size="small" type="primary" v-if="scope.row.State===4">待确认评价</el-tag>
-					<el-tag size="small" type="success" v-if="scope.row.State===5">已确认评价</el-tag>
+					<!-- <el-tag size="small" type="info" v-if="scope.row.State===1">待购买</el-tag>
+					<el-tag size="small" type="warning" v-if="scope.row.State==2">待确认购买</el-tag>
+					<el-tag size="small" type="warning" v-if="scope.row.State==3">待评价</el-tag>
+					<el-tag size="small" type="warning" v-if="scope.row.State==4">待确认评价</el-tag>
+					<el-tag size="small" type="warning" v-if="scope.row.State==5">待返款</el-tag>
+					<el-tag size="small" type="success" v-if="scope.row.State==6">已完成</el-tag>
+					<el-tag size="small" type="danger" v-if="scope.row.State==6">已完成</el-tag> -->
+					<el-tag size="small" type="info">待购买</el-tag>
+					<el-tag size="small" type="warning">待确认购买</el-tag>
+					<el-tag size="small" type="warning">待评价</el-tag>
+					<el-tag size="small" type="warning">待确认评价</el-tag>
+					<el-tag size="small" type="warning">待返款</el-tag>
+					<el-tag size="small" type="success">已完成</el-tag>
+					<el-tag size="small" type="danger">已取消</el-tag>
 				</template>
 			</el-table-column>
-			<el-table-column label="操作" align="center" width="250">
+			<el-table-column label="操作" align="center" width="350">
 				<template v-slot="scope">
 					<el-button size="small" type="primary" @click.stop="handleEdit(scope.$index, scope.row)">确认购买</el-button>
-					<el-button size="small" type="success" @click.stop="handleEdit(scope.$index, scope.row)">确认评价</el-button>
+					<el-button size="small" type="warning" @click.stop="handleEdit(scope.$index, scope.row)">确认评价</el-button>
+					<el-button size="small" type="success" @click.stop="handleEdit(scope.$index, scope.row)">确认返款</el-button>
+					<el-button size="small" type="danger" @click.stop="handleEdit(scope.$index, scope.row)">取消</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
