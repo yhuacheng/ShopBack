@@ -25,7 +25,8 @@
 			</el-table-column>
 			<el-table-column prop="Email" label="邮箱" align="center"></el-table-column>
 			<el-table-column prop="BuyerGrade" label="等级" align="center"></el-table-column>
-			<el-table-column prop="BuyerScore" label="积分" align="center"></el-table-column>
+			<el-table-column prop="GradeScore" label="账号等级分" align="center"></el-table-column>
+			<el-table-column prop="BuyerScore" label="会员积分" align="center"></el-table-column>
 			<el-table-column prop="PaypalAccount" label="PP账号" align="center"></el-table-column>
 			<el-table-column prop="ProfileUrl" label="亚马逊个人介绍" align="center"></el-table-column>
 			<el-table-column prop="ProfileImage" label="亚马逊介绍截图" align="center">
@@ -135,7 +136,7 @@
 				buyerList(params).then(res => {
 					_this.listLoading = false
 					_this.tableData = res.result.Entity
-					_this.total = Number(res.result.total)
+					_this.total = Number(res.result.TotalCount)
 				}).catch((e) => {})
 			},
 
