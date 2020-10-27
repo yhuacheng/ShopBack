@@ -52,6 +52,12 @@
 					<img style="width: 40px;height: 40px;" v-if="scope.row.ProductUrl" :src="scope.row.ProductUrl" @click.stop="showImage(scope.row.ProductUrl)" />
 				</template>
 			</el-table-column>
+			<el-table-column prop="Type" label="内外单" align="center">
+				<template slot-scope="scope">
+					<span class="success" v-if="scope.row.Type===1">内单商品</span>
+					<span class="warning" v-if="scope.row.Type===2">外单商品</span>
+				</template>
+			</el-table-column>
 			<el-table-column prop="CountryName" label="所属国家" align="center"></el-table-column>
 			<el-table-column prop="DiscountsTypeName" label="优惠类别" align="center"></el-table-column>
 			<el-table-column prop="ProductTypeName" label="商品类别" align="center"></el-table-column>
@@ -120,7 +126,7 @@
 					</el-col>
 					<el-col :span="6">
 						<el-form-item label="优惠类别" prop="disType">
-							<el-select v-model="editForm.disType" placeholder="请选择优惠类别" class="w100">
+							<el-select v-model="editForm.disType" placeholder="请选择优惠类别" class="w100" @change="changeDisType">
 								<el-option v-for="item in disTypeData" :key="item.Id" :label="item.Name" :value="item.Id"></el-option>
 							</el-select>
 						</el-form-item>
@@ -135,7 +141,7 @@
 					<el-col :span="6">
 						<el-form-item label="商品等级" prop="level">
 							<el-select v-model="editForm.level" placeholder="请选择商品等级" class="w100">
-								<el-option v-for="item in levelData" :key="item" :label="item" :value="item"></el-option>
+								<el-option v-for="item in levelData" :key="item.Id" :label="item.Grade" :value="item.Id"></el-option>
 							</el-select>
 						</el-form-item>
 					</el-col>
@@ -178,7 +184,7 @@
 					</el-col>
 					<el-col :span="6">
 						<el-form-item label="折扣" prop="discount">
-							<el-input v-model="editForm.discount">
+							<el-input v-model="editForm.discount" :disabled="discountDis">
 								<template slot="append">%</template>
 							</el-input>
 						</el-form-item>
@@ -190,13 +196,13 @@
 							</el-input>
 						</el-form-item>
 					</el-col>
-					<el-col :span="6">
-						<el-form-item label="积分" prop="integral">
+					<el-col :span="6" v-if="editForm.disType==3">
+						<el-form-item label="所需积分" prop="integral">
 							<el-input v-model="editForm.integral"></el-input>
 						</el-form-item>
 					</el-col>
-					<el-col :span="6">
-						<el-form-item label="佣金" prop="commission">
+					<el-col :span="6" v-if="editForm.disType==4">
+						<el-form-item label="可获佣金" prop="commission">
 							<el-input v-model="editForm.commission">
 								<template slot="append">{{editForm.currency}}</template>
 							</el-input>
@@ -260,7 +266,8 @@
 		productDelete,
 		countryList,
 		typeList,
-		discountsType
+		discountsType,
+		levelScoreList
 	} from '@/api/api'
 
 	import {
@@ -289,9 +296,10 @@
 				countryData: [],
 				typeData: [],
 				disTypeData: [],
-				levelData: ['A', 'B', 'C', 'D', 'E', 'F'],
+				levelData: [],
 				selsData: [],
 				selectId: '',
+				discountDis: false,
 				searchForm: {
 					name: '',
 					country: '0',
@@ -372,7 +380,7 @@
 						},
 						{
 							pattern: /^[1-9]\d*$/,
-							message: '库存数量必须为大于0的正整数',
+							message: '库存数量必须为正整数',
 							trigger: 'blur'
 						}
 					],
@@ -382,8 +390,8 @@
 							trigger: 'blur'
 						},
 						{
-							pattern: /^[0-9]+([.]{1}[0-9]+){0,1}$/,
-							message: '金额格式不正确',
+							pattern: /^(([1-9][0-9]*)|(([0]\.\d{1,2}|[1-9][0-9]*\.\d{1,2})))$/,
+							message: '金额格式不正确（大于0且最多2位小数）',
 							trigger: 'blur'
 						}
 					],
@@ -393,21 +401,33 @@
 							trigger: 'blur'
 						},
 						{
-							pattern: /^[0-9]\d*$/,
-							message: '折扣必须为整数',
+							pattern: /^([1-9]|[1-9]\\d|100)$/,
+							message: '折扣必须为1-100的整数',
 							trigger: 'blur'
 						}
 					],
-					commission: {
-						pattern: /^[0-9]+([.]{1}[0-9]+){0,1}$/,
-						message: '金额格式不正确',
-						trigger: 'blur'
-					},
-					integral: {
-						pattern: /^[0-9]\d*$/,
-						message: '积分必须为整数',
-						trigger: 'blur'
-					}
+					commission: [{
+							required: true,
+							message: '请输入可获佣金',
+							trigger: 'blur'
+						},
+						{
+							pattern: /^(([1-9][0-9]*)|(([0]\.\d{1,2}|[1-9][0-9]*\.\d{1,2})))$/,
+							message: '金额格式不正确（大于0且最多2位小数）',
+							trigger: 'blur'
+						}
+					],
+					integral: [{
+							required: true,
+							message: '请输入所需积分',
+							trigger: 'blur'
+						},
+						{
+							pattern: /^[1-9]\d*$/,
+							message: '积分必须为正整数',
+							trigger: 'blur'
+						}
+					]
 				}
 			}
 		},
@@ -426,6 +446,7 @@
 			this.getCountryData()
 			this.getTypeData()
 			this.getDisTypeData()
+			this.getLevelData()
 		},
 		methods: {
 			// 获取列表数据
@@ -472,6 +493,18 @@
 				}
 			},
 
+			//选择优惠类型为赠品时
+			changeDisType() {
+				let _this = this
+				if (_this.editForm.disType == 2) {
+					_this.editForm.discount = 0
+					_this.discountDis = true
+				} else {
+					_this.editForm.discount = ''
+					_this.discountDis = false
+				}
+			},
+
 			// 获取商品类别数据
 			getTypeData() {
 				let _this = this
@@ -491,6 +524,20 @@
 				let params = {}
 				discountsType(params).then(res => {
 					_this.disTypeData = res.result
+				}).catch((e) => {})
+			},
+
+			//获取商品等级数据
+			getLevelData() {
+				let _this = this
+				_this.listLoading = true
+				let params = {
+					keyWord: '',
+					pageIndex: 1,
+					pageSize: 100000000
+				}
+				levelScoreList(params).then(res => {
+					_this.levelData = res.result.Entity
 				}).catch((e) => {})
 			},
 

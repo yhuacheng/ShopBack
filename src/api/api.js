@@ -39,6 +39,10 @@ export const typeList = (params) => get('/api/ProductType/GetProductTypeList', p
 export const typeAdd = (params) => post('/api/ProductType/AddProductType', params) //商品分类新增
 export const typeEdit = (params) => post('/api/ProductType/UpdateProductType', params) //商品分类修改
 
+export const levelScoreList = (params) => get('/api/ProductGrade/GetProductGradeList', params) //商品等级分数列表
+export const levelScoreAdd = (params) => post('/api/ProductGrade/AddProductGrade', params) //商品等级分数新增
+export const levelScoreEdit = (params) => post('/api/ProductGrade/UpdateProductGrade', params) //商品等级分数修改
+
 export const bannerList = (params) => get('/api/Rotation/GetRotationList', params) //轮播图列表
 export const bannerAdd = (params) => postForm('/api/Rotation/Add', params) //轮播图新增
 export const bannerEdit = (params) => postForm('/api/Rotation/UpdateRotation', params) //轮播图修改

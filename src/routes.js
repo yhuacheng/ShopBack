@@ -89,6 +89,11 @@ export default new Router({
 					name: '商品类别'
 				},
 				{
+					path: '/levelScore',
+					component: () => import('./views/systemManage/levelScore.vue'),
+					name: '等级分数'
+				},
+				{
 					path: '/banner',
 					component: () => import('./views/systemManage/banner.vue'),
 					name: '轮播管理'

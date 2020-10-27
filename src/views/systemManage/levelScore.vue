@@ -3,10 +3,9 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="searchForm">
-				<el-form-item label="国家" prop="country">
-					<el-select v-model="searchForm.country" placeholder="请选择国家" size="small">
-						<el-option value="0" label="全部国家"></el-option>
-						<el-option v-for="item in countryData" :key="item.Id" :label="item.CountryName" :value="item.Id"></el-option>
+				<el-form-item label="等级">
+					<el-select v-model="searchForm.level" placeholder="请选择商品等级" size="small">
+						<el-option v-for="item in levelData" :key="item" :label="item" :value="item"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item>
@@ -21,12 +20,8 @@
 		<el-table border :data="tableData" @selection-change="selsChange" v-loading="listLoading" style="width: 100%" id="tableData"
 		 ref='tableData'>
 			<el-table-column type="index" label="#" align="center"></el-table-column>
-			<el-table-column prop="CountryName" label="国家" align="center" width="200"></el-table-column>
-			<el-table-column prop="Message" label="系统公告" align="center" :show-overflow-tooltip='true'>
-				<template v-slot="scope">
-					<div v-html="scope.row.Message"></div>
-				</template>
-			</el-table-column>
+			<el-table-column prop="Grade" label="商品等级" align="center"></el-table-column>
+			<el-table-column prop="Score" label="等级分数" align="center"></el-table-column>
 			<el-table-column label="操作" align="center" width="100">
 				<template v-slot="scope">
 					<el-button size="small" type="primary" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -34,16 +29,24 @@
 			</el-table-column>
 		</el-table>
 
+		<!--工具条-->
+		<el-col :span="24" class="toolbar">
+			<el-pagination style="float: right;" @size-change="handleSizeChange" @current-change="handleCurrentChange"
+			 :current-page="pageIndex" :page-sizes="[10, 20, 50, 100]" :page-size="10" layout="total, sizes, prev, pager, next, jumper"
+			 :total="total">
+			</el-pagination>
+		</el-col>
+
 		<!--编辑界面-->
-		<el-dialog :title="title" :visible.sync="editModal" :close-on-click-modal="false" :before-close="closeModal" width="70%">
-			<el-form :model="editForm" label-width="60px" :rules="rules" ref="editForm">
-				<el-form-item label="国家" prop="country">
-					<el-select v-model="editForm.country" placeholder="请选择国家" class="w100">
-						<el-option v-for="item in countryData" :key="item.Id" :label="item.CountryName" :value="item.Id"></el-option>
+		<el-dialog :title="title" :visible.sync="editModal" :close-on-click-modal="false" :before-close="closeModal" width="30%">
+			<el-form :model="editForm" label-width="80px" :rules="rules" ref="editForm">
+				<el-form-item label="商品等级" prop="level">
+					<el-select v-model="editForm.level" placeholder="请选择商品等级" class="w100">
+						<el-option v-for="item in levelData" :key="item" :label="item" :value="item"></el-option>
 					</el-select>
 				</el-form-item>
-				<el-form-item label="公告">
-					<quill-editor v-model="editForm.notice" ref="myQuillEditor" class="editor-box" :options="editorOption"></quill-editor>
+				<el-form-item label="等级分数" prop="score">
+					<el-input v-model="editForm.score"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -57,24 +60,13 @@
 
 <script>
 	import {
-		noticeList,
-		noticeAdd,
-		noticeEdit,
-		countryList
+		levelScoreList,
+		levelScoreAdd,
+		levelScoreEdit
 	} from '@/api/api'
 
-	import {
-		quillEditor
-	} from 'vue-quill-editor'
-	import 'quill/dist/quill.core.css'
-	import 'quill/dist/quill.snow.css'
-	import 'quill/dist/quill.bubble.css'
-
 	export default {
-		name: 'notice',
-		components: {
-			quillEditor
-		},
+		name: 'levelScore',
 		data() {
 			return {
 				title: '',
@@ -86,32 +78,38 @@
 				listLoading: false,
 				btnLoading: false,
 				tableData: [],
-				countryData: [],
+				levelData: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
 				selsData: [],
 				selectId: '',
 				searchForm: {
-					country: '0'
+					level: ''
 				},
 				editForm: {
-					country: '',
-					notice: ''
-				},
-				editorOption: {
-					placeholder: '',
-					theme: 'snow',
+					level: '',
+					score: ''
 				},
 				rules: {
-					country: {
+					level: {
 						required: true,
-						message: '请选择国家',
+						message: '请输入商品等级',
 						trigger: 'blur'
-					}
+					},
+					score: [{
+							required: true,
+							message: '请输入等级分数',
+							trigger: 'blur'
+						},
+						{
+							pattern: /^[1-9]\d*$/,
+							message: '分数必须为正整数',
+							trigger: 'blur'
+						}
+					]
 				}
 			}
 		},
 		created() {
 			this.getData()
-			this.getCountryData()
 		},
 		methods: {
 			// 获取列表数据
@@ -119,25 +117,14 @@
 				let _this = this
 				_this.listLoading = true
 				let params = {
-					CountryId: _this.searchForm.country
+					keyWord: _this.searchForm.level,
+					pageIndex: _this.pageIndex,
+					pageSize: _this.pageSize
 				}
-				noticeList(params).then(res => {
+				levelScoreList(params).then(res => {
 					_this.listLoading = false
-					_this.tableData = res.Entity
-					_this.total = Number(res.TotalCount)
-				}).catch((e) => {})
-			},
-
-			// 获取国家数据
-			getCountryData() {
-				let _this = this
-				let params = {
-					Name: '',
-					pageIndex: 1,
-					pageSize: 100000000
-				}
-				countryList(params).then(res => {
-					_this.countryData = res.Entity
+					_this.tableData = res.result.Entity
+					_this.total = Number(res.result.TotalCount)
 				}).catch((e) => {})
 			},
 
@@ -153,7 +140,7 @@
 				let _this = this
 				_this.pageIndex = 1
 				_this.searchForm = {
-						country: '0'
+						level: ''
 					},
 					_this.getData()
 			},
@@ -161,7 +148,7 @@
 			// 显示新增框
 			handleAdd() {
 				let _this = this
-				_this.title = '新增系统公告'
+				_this.title = '新增商品等级积分'
 				_this.doType = 'add'
 				_this.editModal = true
 			},
@@ -169,12 +156,12 @@
 			// 显示编辑框
 			handleEdit(index, row) {
 				let _this = this
-				_this.title = '编辑系统公告'
+				_this.title = '编辑商品等级积分'
 				_this.doType = 'edit'
 				_this.selectId = row.Id
 				_this.editModal = true
-				_this.editForm.country = row.CountryId
-				_this.editForm.notice = row.Message
+				_this.editForm.level = row.Grade
+				_this.editForm.score = row.Score
 			},
 
 			//新增提交
@@ -184,10 +171,10 @@
 					if (valid) {
 						_this.btnLoading = true
 						let params = {
-							CountryId: _this.editForm.country,
-							Message: _this.editForm.notice
+							Grade: _this.editForm.level,
+							Score: _this.editForm.score
 						}
-						noticeAdd(params).then(res => {
+						levelScoreAdd(params).then(res => {
 							_this.btnLoading = false
 							_this.closeModal()
 							_this.getData()
@@ -206,10 +193,10 @@
 						_this.btnLoading = true
 						let params = {
 							Id: _this.selectId,
-							CountryId: _this.editForm.country,
-							Message: _this.editForm.notice
+							Grade: _this.editForm.level,
+							Score: _this.editForm.score
 						}
-						noticeEdit(params).then(res => {
+						levelScoreEdit(params).then(res => {
 							_this.btnLoading = false
 							_this.closeModal()
 							_this.getData()
@@ -227,8 +214,8 @@
 				_this.btnLoading = false
 				_this.$refs['editForm'].resetFields()
 				_this.editForm = {
-					country: '',
-					notice: ''
+					level: '',
+					score: ''
 				}
 			},
 

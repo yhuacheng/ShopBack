@@ -104,7 +104,7 @@
 				editModal: false,
 				listLoading: false,
 				btnLoading: false,
-				levelData: ['A', 'B', 'C', 'D', 'E', 'F'],
+				levelData: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
 				tableData: [],
 				selsData: [],
 				selectId: '',
