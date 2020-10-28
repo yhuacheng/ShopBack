@@ -54,8 +54,8 @@
 			</el-table-column>
 			<el-table-column prop="Type" label="内外单" align="center">
 				<template slot-scope="scope">
-					<span class="success" v-if="scope.row.Type===1">内单商品</span>
-					<span class="warning" v-if="scope.row.Type===2">外单商品</span>
+					<span v-if="scope.row.Type===1">内单商品</span>
+					<span v-if="scope.row.Type===2">外单商品</span>
 				</template>
 			</el-table-column>
 			<el-table-column prop="CountryName" label="所属国家" align="center"></el-table-column>
@@ -65,7 +65,9 @@
 			<el-table-column prop="Number" label="库存" align="center"></el-table-column>
 			<el-table-column prop="PresentPrice" label="现价" align="center">
 				<template slot-scope="scope">
-					<span>{{scope.row.Price}} {{scope.row.Currency}}</span>
+					<div>{{scope.row.Price}}{{scope.row.Currency}}</div>
+					<div v-if="scope.row.Integral>0">+{{scope.row.Integral}}积分兑换</div>
+					<div v-if="scope.row.Commission>0">+返{{scope.row.Commission}}佣金</div>
 				</template>
 			</el-table-column>
 			<el-table-column prop="AddTime" label="添加时间" align="center"></el-table-column>
@@ -379,8 +381,8 @@
 							trigger: 'blur'
 						},
 						{
-							pattern: /^[1-9]\d*$/,
-							message: '库存数量必须为正整数',
+							pattern: /^[0-9]\d*$/,
+							message: '库存数量必须为大于等于0的整数',
 							trigger: 'blur'
 						}
 					],
@@ -401,8 +403,8 @@
 							trigger: 'blur'
 						},
 						{
-							pattern: /^([1-9]|[1-9]\\d|100)$/,
-							message: '折扣必须为1-100的整数',
+							pattern: /^(?:[1-9]?\d|100)$/,
+							message: '折扣必须为0-100的整数',
 							trigger: 'blur'
 						}
 					],
@@ -496,7 +498,8 @@
 			//选择优惠类型为赠品时
 			changeDisType() {
 				let _this = this
-				if (_this.editForm.disType == 2) {
+				let disType = _this.editForm.disType
+				if (disType == 2) {
 					_this.editForm.discount = 0
 					_this.discountDis = true
 				} else {
@@ -672,6 +675,20 @@
 					if (valid) {
 						_this.btnLoading = true
 
+						let integral = Number(_this.editForm.integral)
+						let commission = Number(_this.editForm.commission)
+						let disType = _this.editForm.disType
+						if (disType == 1 || disType == 2) {
+							integral = 0
+							commission = 0
+						}
+						if (disType == 3) {
+							commission = 0
+						}
+						if (disType == 4) {
+							integral = 0
+						}
+
 						//创建formData 用formData形式传参
 						let params = new FormData()
 						params.append('ProductName', _this.editForm.name)
@@ -688,8 +705,8 @@
 						params.append('Price', _this.editForm.price)
 						params.append('Discount', _this.editForm.discount)
 						params.append('PresentPrice', _this.nowPrice)
-						params.append('Commission', Number(_this.editForm.commission))
-						params.append('Integral', Number(_this.editForm.integral))
+						params.append('Commission', commission)
+						params.append('Integral', integral)
 						params.append('ProductDescribe', _this.editForm.description)
 						params.append('UserId', _this.editForm.code)
 						_this.fileListAdd.map(item => {
@@ -714,6 +731,20 @@
 					if (valid) {
 						_this.btnLoading = true
 
+						let integral = Number(_this.editForm.integral)
+						let commission = Number(_this.editForm.commission)
+						let disType = _this.editForm.disType
+						if (disType == 1 || disType == 2) {
+							integral = 0
+							commission = 0
+						}
+						if (disType == 3) {
+							commission = 0
+						}
+						if (disType == 4) {
+							integral = 0
+						}
+
 						//创建formData 用formData形式传参
 						let params = new FormData()
 						params.append('Id', _this.selectId)
@@ -731,8 +762,8 @@
 						params.append('Price', _this.editForm.price)
 						params.append('Discount', _this.editForm.discount)
 						params.append('PresentPrice', _this.nowPrice)
-						params.append('Commission', Number(_this.editForm.commission))
-						params.append('Integral', Number(_this.editForm.integral))
+						params.append('Commission', commission)
+						params.append('Integral', integral)
 						params.append('ProductDescribe', _this.editForm.description)
 						params.append('UserId', _this.editForm.code)
 						_this.fileListAdd.map(item => {
