@@ -47,7 +47,7 @@
 			<el-table-column type="selection" align="center"></el-table-column>
 			<el-table-column type="index" label="#" align="center"></el-table-column>
 			<el-table-column prop="ProductName" label="商品名称" align="center" :show-overflow-tooltip='true'></el-table-column>
-			<el-table-column prop="picture" label="商品图" align="center">
+			<el-table-column prop="ProductUrl" label="商品图" align="center">
 				<template slot-scope="scope">
 					<img style="width: 40px;height: 40px;" v-if="scope.row.ProductUrl" :src="scope.row.ProductUrl" @click.stop="showImage(scope.row.ProductUrl)" />
 				</template>
@@ -65,9 +65,13 @@
 			<el-table-column prop="Number" label="库存" align="center"></el-table-column>
 			<el-table-column prop="PresentPrice" label="现价" align="center">
 				<template slot-scope="scope">
-					<div>{{scope.row.Price}}{{scope.row.Currency}}</div>
-					<div v-if="scope.row.Integral>0">+{{scope.row.Integral}}积分兑换</div>
-					<div v-if="scope.row.Commission>0">+返{{scope.row.Commission}}佣金</div>
+					<div>{{scope.row.PresentPrice}}{{scope.row.Currency}}</div>
+					<div v-if="scope.row.Integral>0">+{{scope.row.Integral}}积分</div>
+				</template>
+			</el-table-column>
+			<el-table-column prop="Commission" label="佣金" align="center">
+				<template slot-scope="scope">
+					<span>{{scope.row.Commission}}{{scope.row.Currency}}</span>
 				</template>
 			</el-table-column>
 			<el-table-column prop="AddTime" label="添加时间" align="center"></el-table-column>
@@ -257,8 +261,7 @@
 </template>
 
 <script>
-	import FileSaver from 'file-saver'
-	import XLSX from 'xlsx'
+	import table2excel from 'js-table2excel'
 
 	import {
 		productList,
@@ -912,22 +915,141 @@
 
 			// 导出
 			exportExcel() {
-				var wb = XLSX.utils.table_to_book(document.querySelector('#tableData'))
-				var wbout = XLSX.write(wb, {
-					bookType: 'xlsx',
-					bookSST: true,
-					type: 'array'
-				})
-				try {
-					FileSaver.saveAs(new Blob([wbout], {
-						type: 'application/octet-stream'
-					}), '商品信息.xlsx')
-				} catch (e) {
-					if (typeof console !== 'undefined') {
-						console.log(e, wbout)
+				const column = [{
+						title: '商品名称',
+						key: 'ProductName',
+						type: 'text'
+					},
+					{
+						title: '商品图',
+						key: 'ExpProductUrl',
+						type: 'image',
+						width: 100,
+						height: 100
+					},
+					{
+						title: '内外单',
+						key: 'ExpType',
+						type: 'text'
+					},
+					{
+						title: '所属国家',
+						key: 'CountryName',
+						type: 'text'
+					},
+					{
+						title: '优惠类别',
+						key: 'DiscountsTypeName',
+						type: 'text'
+					},
+					{
+						title: '商品类别',
+						key: 'ProductTypeName',
+						type: 'text'
+					},
+					{
+						title: '商品等级',
+						key: 'Grade',
+						type: 'text'
+					},
+					{
+						title: '店铺',
+						key: 'Shop',
+						type: 'text'
+					},
+					{
+						title: 'ASIN',
+						key: 'ASIN',
+						type: 'text'
+					},
+					{
+						title: '关键词',
+						key: 'KeyWord',
+						type: 'text'
+					},
+					{
+						title: '品牌',
+						key: 'Brand',
+						type: 'text'
+					},
+					{
+						title: '产品位置',
+						key: 'Place',
+						type: 'text'
+					},
+					{
+						title: '库存',
+						key: 'Number',
+						type: 'text'
+					},
+					{
+						title: '原价',
+						key: 'ExpPrice',
+						type: 'text'
+					},
+					{
+						title: '折扣',
+						key: 'ExpDiscount',
+						type: 'text'
+					},
+					{
+						title: '现价',
+						key: 'ExpPresentPrice',
+						type: 'text'
+					},
+					{
+						title: '佣金',
+						key: 'ExpCommission',
+						type: 'text'
+					},
+					{
+						title: '添加时间',
+						key: 'AddTime',
+						type: 'text'
+					},
+					{
+						title: '状态',
+						key: 'ExpState',
+						type: 'text'
+					},
+				]
+				const data = this.tableData
+				for (const t in data) {
+					data[t].ExpProductUrl = this.$IMGURLBACK + data[t].ProductUrl
+					let TxtType = ''
+					if (data[t].Type == 1) {
+						TxtType = '内单商品'
 					}
+					if (data[t].Type == 2) {
+						TxtType = '外单商品'
+					}
+					data[t].ExpType = TxtType
+					let TxtState = ''
+					if (data[t].State == -1) {
+						TxtState = '未上架'
+					}
+					if (data[t].State == 1) {
+						TxtState = '已上架'
+					}
+					data[t].ExpState = TxtState
+					data[t].ExpPrice = data[t].Price + data[t].Currency
+					data[t].ExpPresentPrice = data[t].PresentPrice + data[t].Currency
+					let Integral = data[t].Integral
+					if (Integral > 0) {
+						data[t].ExpPresentPrice += '+' + Integral + '积分'
+					}
+					data[t].ExpDiscount = data[t].Discount + '%'
+					data[t].ExpCommission = data[t].Commission + data[t].Currency
 				}
-				return wbout
+
+				let date = new Date()
+				let year = date.getFullYear()
+				let month = date.getMonth() < 9 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1
+				let day = date.getDate() <= 9 ? "0" + date.getDate() : date.getDate()
+				let time = year + '-' + month + '-' + day
+
+				const excelName = '商品信息' + '_' + time + '.xls'
+				table2excel(column, data, excelName)
 			}
 
 		}

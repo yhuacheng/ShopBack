@@ -7,7 +7,9 @@ import router from './routes'
 
 Vue.use(ElementUI)
 
-Vue.prototype.$IMGURL = 'http://47.112.217.146:90' //统一设置页面上图片URL路径入口
+Vue.prototype.$IMGURL = 'http://47.112.217.146:90' //统一设置页面上图片URL路径入口（前台图片）
+
+Vue.prototype.$IMGURLBACK = 'http://47.112.217.146:9090' //统一设置页面上图片URL路径入口（后台图片，列表导出图片需要用到完整路径）
 
 router.beforeEach((to, from, next) => {
 	let userId = sessionStorage.getItem('userId')

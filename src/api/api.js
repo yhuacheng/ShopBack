@@ -57,3 +57,5 @@ export const noticeEdit = (params) => post('/api/Notice/UpdateNotice', params) /
 
 export const buyerList = (params) => get('/api/Buyer/GetBuyerList', params) //买家列表
 export const buyerEdit = (params) => post('/api/Buyer/UpdateBuyer', params) //买家修改
+
+export const orderList = (params) => get('/api/Order/GetOrderList', params) //买家列表
