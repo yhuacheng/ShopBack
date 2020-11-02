@@ -587,7 +587,7 @@
 				_this.editForm.country = Number(row.CountryId)
 				_this.editForm.disType = Number(row.DiscountsTypeId)
 				_this.editForm.type = Number(row.ProductTypeId)
-				_this.editForm.level = row.Grade
+				_this.editForm.level = row.ProductGradeId
 				_this.editForm.shop = row.Shop
 				_this.editForm.asin = row.ASIN
 				_this.editForm.keyWord = row.KeyWord
