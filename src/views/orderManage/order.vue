@@ -61,9 +61,9 @@
 					<span>{{scope.row.Commission}}{{scope.row.Currency}}</span>
 				</template>
 			</el-table-column>
-			<el-table-column prop="AddTime" label="下单时间" align="center"></el-table-column>
-			<el-table-column prop="AmazonNumber" label="亚马逊单号" align="center"></el-table-column>
-			<el-table-column prop="BuyTime" label="购买时间" align="center"></el-table-column>
+			<el-table-column prop="AddTime" label="下单时间" align="center" width="92"></el-table-column>
+			<el-table-column prop="AmazonNumber" label="亚马逊单号" align="center" width="100"></el-table-column>
+			<el-table-column prop="BuyTime" label="购买时间" align="center" width="92"></el-table-column>
 			<el-table-column prop="CommontLink" label="评价链接" align="center"></el-table-column>
 			<el-table-column prop="CommontImage" label="评价截图" align="center">
 				<template slot-scope="scope">
@@ -71,19 +71,26 @@
 					 @click.stop="showImage($IMGURL+scope.row.CommontImage)" />
 				</template>
 			</el-table-column>
-			<el-table-column prop="State" label="状态" align="center" width="100">
+			<el-table-column prop="FKImage" label="返款截图" align="center" width="150">
+				<template slot-scope="scope">
+					<img style="width: 40px;height: 40px;margin-right: 2px;" v-for="item in scope.row.FKImage" v-if="item" :src="item"
+					 @click.stop="showImage(item)" />
+				</template>
+			</el-table-column>
+			<el-table-column prop="State" label="状态" align="center" width="120" :show-overflow-tooltip='true'>
 				<template slot-scope="scope">
 					<el-tag size="small" type="info" v-if="scope.row.State==-1">待购买</el-tag>
-					<el-tag size="small" type="warning" v-if="scope.row.State==1">待审核购买</el-tag>
-					<el-tag size="small" type="warning" v-if="scope.row.State==2">待评价</el-tag>
+					<el-tag size="small" type="primary" v-if="scope.row.State==1">待审核购买</el-tag>
+					<el-tag size="small" type="info" v-if="scope.row.State==2">待评价</el-tag>
 					<el-tag size="small" type="warning" v-if="scope.row.State==3">待审核评价</el-tag>
 					<el-tag size="small" type="success" v-if="scope.row.State==4">已完成</el-tag>
 					<el-tag size="small" type="danger" v-if="scope.row.State==5">失败</el-tag>
 					<el-tag size="small" type="danger" v-if="scope.row.State==-2">已取消</el-tag>
-					<div v-if="scope.row.Remark" class="danger">{{scope.row.Remark}}</div>
+					<br>
+					<span v-if="scope.row.Remark" class="danger">{{scope.row.Remark}}</span>
 				</template>
 			</el-table-column>
-			<el-table-column label="操作" align="center" width="200">
+			<el-table-column label="操作" align="right" width="180">
 				<template v-slot="scope">
 					<el-button size="small" type="primary" v-if="scope.row.State==1" @click="handleCheckBuy(scope.$index, scope.row)">审核购买</el-button>
 					<el-button size="small" type="warning" v-if="scope.row.State==3" @click="handleCheckReview(scope.$index, scope.row)">审核评价</el-button>
@@ -140,7 +147,7 @@
 
 		<!-- 审核评价 -->
 		<el-dialog :title="title" :visible.sync="checkReviewModal" :close-on-click-modal="false" :before-close="closeCheckReviewModal"
-		 width="30%">
+		 width="40%">
 			<el-form :model="infoForm" label-width="100px" size="mini">
 				<el-form-item label="商品名称：">
 					<span>{{infoForm.productName}}</span>
@@ -163,8 +170,8 @@
 				</el-form-item>
 				<el-form-item label="评价截图：">
 					<el-link :underline="false" v-if="infoForm.reviewImg" :href="$IMGURL+infoForm.reviewImg" target="_blank">
-						<span class="success">温馨提示：点击图片可查看原图</span>
-						<img :src="$IMGURL+infoForm.reviewImg" style="width: 100%;height: 100px;" />
+						<span class="success">温馨提示：点击图片可查看原图</span><br>
+						<img :src="$IMGURL+infoForm.reviewImg" style="height: 100px;" />
 					</el-link>
 				</el-form-item>
 			</el-form>
@@ -175,8 +182,27 @@
 						<el-radio :label="2">审核不通过</el-radio>
 					</el-radio-group>
 				</el-form-item>
+				<el-form-item label="会员积分：" prop="points">
+					<el-radio-group v-model="checkReviewForm.points">
+						<el-radio v-for="item in pointsData" :label="item"></el-radio>
+					</el-radio-group>
+				</el-form-item>
+				<el-form-item label="账户等级分：" prop="score">
+					<el-radio-group v-model="checkReviewForm.score">
+						<el-radio v-for="item in scoreData" :label="item"></el-radio>
+					</el-radio-group>
+				</el-form-item>
 				<el-form-item v-if="checkReviewForm.state==2" label="原因：" prop="remark">
 					<el-input v-model="checkReviewForm.remark"></el-input>
+				</el-form-item>
+				<!-- 返款截图 图片文件与表单数据一起提交-->
+				<el-form-item label="返款截图：" prop="picture">
+					<el-upload action="" list-type="picture-card" multiple :limit="3" :file-list="fileListAdd" :on-remove="handleAddRemove"
+					 :on-change="handleAddChange" :auto-upload="false" accept="image/jpeg,image/png,image/gif,image/bmp" :class="{'hide':hideUploadAdd}"
+					 :disabled="disUpload">
+						<i class="el-icon-plus"></i>
+						<div class="el-upload__tip warning" slot="tip">注意：最多上传3张图片，每张图片不能大于5M</div>
+					</el-upload>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -200,6 +226,8 @@
 
 	import {
 		orderList,
+		orderCheckBuy,
+		orderCheckReview,
 		countryList
 	} from '@/api/api'
 
@@ -248,8 +276,12 @@
 						trigger: 'blur'
 					}
 				},
+				pointsData: [-3, -2, -1, 0, 1, 2, 3],
+				scoreData: [-3, -2, -1, 0, 1, 2, 3],
 				checkReviewForm: {
 					state: 1,
+					score: 0,
+					points: 0,
 					remark: ''
 				},
 				checkReviewRules: {
@@ -258,7 +290,10 @@
 						message: '必须填写原因',
 						trigger: 'blur'
 					}
-				}
+				},
+				fileListAdd: [],
+				hideUploadAdd: false,
+				disUpload: false
 			}
 		},
 		created() {
@@ -301,6 +336,9 @@
 				orderList(params).then(res => {
 					_this.listLoading = false
 					_this.tableData = res.result.Entity
+					_this.tableData.forEach((item, idx) => {
+						item.FKImage = item.BuyImage ? item.BuyImage.split(',') : []
+					})
 					_this.total = Number(res.result.TotalCount)
 				}).catch((e) => {})
 			},
@@ -348,13 +386,13 @@
 							Type: _this.checkBuyForm.state,
 							Remark: _this.checkBuyForm.remark
 						}
-						// countryAdd(params).then(res => {
-						// 	_this.btnLoading = false
-						// 	_this.closeModal()
-						// 	_this.getData()
-						// }).catch((e) => {
-						// 	_this.btnLoading = false
-						// })
+						orderCheckBuy(params).then(res => {
+							_this.btnLoading = false
+							_this.closeCheckBuyModal()
+							_this.getData()
+						}).catch((e) => {
+							_this.btnLoading = false
+						})
 					}
 				})
 			},
@@ -393,18 +431,25 @@
 				_this.$refs.checkReviewForm.validate((valid) => {
 					if (valid) {
 						_this.btnLoading = true
-						let params = {
-							Id: _this.infoForm.orderId,
-							Type: _this.checkReviewForm.state,
-							Remark: _this.checkReviewForm.remark
-						}
-						// countryAdd(params).then(res => {
-						// 	_this.btnLoading = false
-						// 	_this.closeModal()
-						// 	_this.getData()
-						// }).catch((e) => {
-						// 	_this.btnLoading = false
-						// })
+
+						//创建formData 用formData形式传参
+						let params = new FormData()
+						params.append('Id', _this.infoForm.orderId)
+						params.append('State', _this.checkReviewForm.state)
+						params.append('Remark', _this.checkReviewForm.remark)
+						params.append('Integral', _this.checkReviewForm.points)
+						params.append('Grade', _this.checkReviewForm.score)
+						_this.fileListAdd.map(item => {
+							params.append("image", item.raw);
+						})
+
+						orderCheckReview(params).then(res => {
+							_this.btnLoading = false
+							_this.closeCheckReviewModal()
+							_this.getData()
+						}).catch((e) => {
+							_this.btnLoading = false
+						})
 					}
 				})
 			},
@@ -417,8 +462,13 @@
 				_this.$refs['checkReviewForm'].resetFields()
 				_this.checkReviewForm = {
 					state: 1,
+					score: 0,
+					points: 0,
 					remark: ''
 				}
+				_this.fileListAdd = []
+				_this.hideUploadAdd = false
+				_this.disUpload = false
 			},
 
 			//取消订单
@@ -460,6 +510,26 @@
 				let _this = this
 				_this.ViewImageModal = true
 				_this.ViewImageUrl = url
+			},
+
+			// 返款截图上传
+			handleAddChange(file, fileList) {
+				const isLt5M = file.size / 1024 / 1024 < 5;
+				if (!isLt5M) {
+					this.$message.error('图片不能大于5M');
+					fileList.splice(-1, 1);
+				} else {
+					this.fileListAdd = fileList;
+				}
+				// 上传文件>=限制个数时隐藏上传组件
+				if (fileList.length >= 3) {
+					this.hideUploadAdd = true;
+				}
+			},
+			// 移除文件
+			handleAddRemove(file, fileList) {
+				this.fileListAdd = fileList
+				this.hideUploadAdd = false;
 			},
 
 			// 导出

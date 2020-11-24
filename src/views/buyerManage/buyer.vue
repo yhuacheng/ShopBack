@@ -28,8 +28,12 @@
 			<el-table-column prop="GradeScore" label="账号等级分" align="center"></el-table-column>
 			<el-table-column prop="BuyerScore" label="会员积分" align="center"></el-table-column>
 			<el-table-column prop="PaypalAccount" label="PP账号" align="center"></el-table-column>
-			<el-table-column prop="ProfileUrl" label="亚马逊个人介绍" align="center"></el-table-column>
-			<el-table-column prop="ProfileImage" label="亚马逊介绍截图" align="center">
+			<el-table-column prop="ProfileUrl" label="亚马逊个人介绍" align="center" width="150" :show-overflow-tooltip='true'>
+				<template slot-scope="scope">
+					<el-link type="primary" :underline="false" :href="scope.row.ProfileUrl" target="_blank">{{scope.row.ProfileUrl}}</el-link>
+				</template>
+			</el-table-column>
+			<el-table-column prop="ProfileImage" label="亚马逊介绍截图" align="center" width="150">
 				<template slot-scope="scope">
 					<img style="width: 60px;height: 40px;" v-if="scope.row.ProfileImage" :src="$IMGURL+scope.row.ProfileImage"
 					 @click.stop="showImage($IMGURL+scope.row.ProfileImage)" />

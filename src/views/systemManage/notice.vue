@@ -24,7 +24,7 @@
 			<el-table-column prop="CountryName" label="国家" align="center" width="200"></el-table-column>
 			<el-table-column prop="Message" label="系统公告" align="center" :show-overflow-tooltip='true'>
 				<template v-slot="scope">
-					<div v-html="scope.row.Message"></div>
+					<span v-html="scope.row.Message"></span>
 				</template>
 			</el-table-column>
 			<el-table-column label="操作" align="center" width="100">

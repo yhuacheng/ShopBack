@@ -58,4 +58,6 @@ export const noticeEdit = (params) => post('/api/Notice/UpdateNotice', params) /
 export const buyerList = (params) => get('/api/Buyer/GetBuyerList', params) //买家列表
 export const buyerEdit = (params) => post('/api/Buyer/UpdateBuyer', params) //买家修改
 
-export const orderList = (params) => get('/api/Order/GetOrderList', params) //买家列表
+export const orderList = (params) => get('/api/Order/GetOrderList', params) //订单列表
+export const orderCheckBuy = (params) => post('/api/Order/ConfirmationAudit', params) //订单审核购买
+export const orderCheckReview = (params) => postForm('/api/Order/ConfirmationWrite', params) //订单审核评价

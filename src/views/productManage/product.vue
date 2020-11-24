@@ -46,7 +46,12 @@
 		 id="tableData" ref='tableData'>
 			<el-table-column type="selection" align="center"></el-table-column>
 			<el-table-column type="index" label="#" align="center"></el-table-column>
-			<el-table-column prop="ProductName" label="商品名称" align="center" :show-overflow-tooltip='true'></el-table-column>
+			<el-table-column prop="ProductName" label="商品名称" align="center" :show-overflow-tooltip='true'>
+				<template slot-scope="scope">
+					<span>{{scope.row.ProductName}}</span>
+					<div><span v-if="scope.row.Hot==1"><span class="danger fz10">热卖</span></span></div>
+				</template>
+			</el-table-column>
 			<el-table-column prop="ProductUrl" label="商品图" align="center">
 				<template slot-scope="scope">
 					<img style="width: 40px;height: 40px;" v-if="scope.row.ProductUrl" :src="scope.row.ProductUrl" @click.stop="showImage(scope.row.ProductUrl)" />
@@ -116,6 +121,12 @@
 								<el-button type="danger" size="mini" @click='editImg'>重新编辑图片</el-button>
 								<el-button type="warning" size="mini" @click='resetImg'>重置商品图片</el-button>
 							</div>
+						</el-form-item>
+					</el-col>
+					<el-col :span="24">
+						<el-form-item label="是否热卖" prop="hot">
+							<el-checkbox v-model="editForm.hot" :true-label="1" :false-label="-1">
+								热卖商品 （勾选此选项后，该商品会展示在页面的热卖商品(Hot Products)栏目中）</el-checkbox>
 						</el-form-item>
 					</el-col>
 					<el-col :span="24">
@@ -329,7 +340,8 @@
 					commission: '',
 					integral: '',
 					description: '',
-					code: ''
+					code: '',
+					hot: -1
 				},
 				drModal: false,
 				fileListAdd: [],
@@ -601,6 +613,7 @@
 				_this.editForm.code = row.UserId
 				_this.editForm.currency = row.Currency
 				_this.editForm.description = row.ProductDescribe
+				_this.editForm.hot = row.Hot
 
 				//图片转换为 url:'xxx' 格式才能回显
 				let img = ''
@@ -647,7 +660,8 @@
 					commission: '',
 					integral: '',
 					description: '',
-					code: ''
+					code: '',
+					hot: -1
 				}
 				_this.fileListAdd = []
 				_this.hideUploadAdd = false
@@ -712,6 +726,7 @@
 						params.append('Integral', integral)
 						params.append('ProductDescribe', _this.editForm.description)
 						params.append('UserId', _this.editForm.code)
+						params.append('Hot', _this.editForm.hot)
 						_this.fileListAdd.map(item => {
 							params.append("image", item.raw);
 						})
@@ -769,6 +784,7 @@
 						params.append('Integral', integral)
 						params.append('ProductDescribe', _this.editForm.description)
 						params.append('UserId', _this.editForm.code)
+						params.append('Hot', _this.editForm.hot)
 						_this.fileListAdd.map(item => {
 							params.append("image", item.raw);
 						});
