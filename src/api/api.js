@@ -61,3 +61,4 @@ export const buyerEdit = (params) => post('/api/Buyer/UpdateBuyer', params) //�
 export const orderList = (params) => get('/api/Order/GetOrderList', params) //订单列表
 export const orderCheckBuy = (params) => post('/api/Order/ConfirmationAudit', params) //订单审核购买
 export const orderCheckReview = (params) => postForm('/api/Order/ConfirmationWrite', params) //订单审核评价
+export const cancelOrder = (params) => post('/api/Order/CancelOrder', params) //订单取消

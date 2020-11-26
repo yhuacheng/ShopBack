@@ -90,11 +90,11 @@
 					<span v-if="scope.row.Remark" class="danger">{{scope.row.Remark}}</span>
 				</template>
 			</el-table-column>
-			<el-table-column label="操作" align="right" width="180">
+			<el-table-column label="操作" align="center" width="180">
 				<template v-slot="scope">
 					<el-button size="small" type="primary" v-if="scope.row.State==1" @click="handleCheckBuy(scope.$index, scope.row)">审核购买</el-button>
 					<el-button size="small" type="warning" v-if="scope.row.State==3" @click="handleCheckReview(scope.$index, scope.row)">审核评价</el-button>
-					<el-button size="small" type="danger" @click="handleCancel(scope.$index, scope.row)">取消</el-button>
+					<el-button size="small" type="danger" v-if="scope.row.State==1||scope.row.State==2||scope.row.State==3" @click="handleCancel(scope.$index, scope.row)">取消</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -226,6 +226,7 @@
 
 	import {
 		orderList,
+		cancelOrder,
 		orderCheckBuy,
 		orderCheckReview,
 		countryList
@@ -471,10 +472,11 @@
 				_this.disUpload = false
 			},
 
-			//取消订单
+			//取消确认弹窗
 			handleCancel(index, row) {
 				let _this = this
-				_this.$prompt('您将要取消买家ID为 ' + row.BuyerId + ' 的订单，请输入取消原因', '取消订单', {
+				_this.selectId = row.Id
+				_this.$prompt('您将要取消买家ID为 ' + row.BuyerId + ' 的一个订单，请输入取消原因', '取消订单', {
 					confirmButtonText: '确定',
 					cancelButtonText: '取消',
 					inputPattern: /\S/,
@@ -482,8 +484,22 @@
 				}).then(({
 					value
 				}) => {
-					// _this.checkPhoneCode(value)
+					_this.handelcancelOrder(value)
 				}).catch(() => {})
+			},
+
+			//取消订单
+			handelcancelOrder(value) {
+				let _this = this
+				let params = {
+					Id: _this.selectId,
+					Remark: value
+				}
+				cancelOrder(params).then(res => {
+					_this.getData()
+				}).catch((e) => {
+					_this.btnLoading = false
+				})
 			},
 
 			//选中数据
