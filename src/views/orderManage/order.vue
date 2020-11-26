@@ -26,6 +26,7 @@
 						<el-option value="4" label="已完成"></el-option>
 						<el-option value="5" label="失败"></el-option>
 						<el-option value="-2" label="已取消"></el-option>
+						<el-option value="-3" label="超时"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item>
@@ -86,6 +87,7 @@
 					<el-tag size="small" type="success" v-if="scope.row.State==4">已完成</el-tag>
 					<el-tag size="small" type="danger" v-if="scope.row.State==5">失败</el-tag>
 					<el-tag size="small" type="danger" v-if="scope.row.State==-2">已取消</el-tag>
+					<el-tag size="small" type="danger" v-if="scope.row.State==-3">超时</el-tag>
 					<br>
 					<span v-if="scope.row.Remark" class="danger">{{scope.row.Remark}}</span>
 				</template>
