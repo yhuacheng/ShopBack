@@ -51,15 +51,15 @@
 			<el-table-column prop="Shop" label="店铺" align="center" :show-overflow-tooltip='true'></el-table-column>
 			<el-table-column prop="ASIN" label="ASIN" align="center"></el-table-column>
 			<el-table-column prop="BuyerId" label="买家ID" align="center"></el-table-column>
-			<el-table-column prop="PresentPrice" label="购买价格" align="center">
+			<el-table-column prop="BuyTotal" label="购买价格" align="center">
 				<template slot-scope="scope">
-					<div>{{scope.row.PresentPrice}}{{scope.row.Currency}}</div>
+					<div>{{scope.row.BuyTotal}}{{scope.row.Currency}}</div>
 					<div v-if="scope.row.Integral>0">+{{scope.row.Integral}}积分</div>
 				</template>
 			</el-table-column>
 			<el-table-column prop="Commission" label="佣金" align="center">
 				<template slot-scope="scope">
-					<span>{{scope.row.Commission}}{{scope.row.Currency}}</span>
+					<span>{{Number(scope.row.Commission)}}{{scope.row.Currency}}</span>
 				</template>
 			</el-table-column>
 			<el-table-column prop="AddTime" label="下单时间" align="center" width="92"></el-table-column>
@@ -382,7 +382,7 @@
 				_this.infoForm.country = row.CountryName
 				_this.infoForm.shopName = row.Shop
 				_this.infoForm.asin = row.ASIN
-				_this.infoForm.disType = row.DiscountsTypeName
+				_this.infoForm.disType = row.Name
 				_this.infoForm.amazonNo = row.AmazonNumber
 			},
 
