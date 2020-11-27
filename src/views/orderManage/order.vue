@@ -125,6 +125,9 @@
 				<el-form-item label="ASIN：">
 					<span>{{infoForm.asin}}</span>
 				</el-form-item>
+				<el-form-item label="优惠类别：">
+					<span>{{infoForm.disType}}</span>
+				</el-form-item>
 				<p style="height: 1px;border-top: 1px solid #DDDDDD;"></p>
 				<el-form-item label="亚马逊单号：">
 					<span class="warning">{{infoForm.amazonNo}}</span>
@@ -162,6 +165,9 @@
 				</el-form-item>
 				<el-form-item label="ASIN：">
 					<span>{{infoForm.asin}}</span>
+				</el-form-item>
+				<el-form-item label="优惠类别：">
+					<span>{{infoForm.disType}}</span>
 				</el-form-item>
 				<p style="height: 1px;border-top: 1px solid #DDDDDD;"></p>
 				<el-form-item label="亚马逊单号：">
@@ -262,6 +268,7 @@
 					country: '',
 					shopName: '',
 					asin: '',
+					disType: '',
 					amazonNo: '',
 					reviewLink: '',
 					reviewImg: []
@@ -375,6 +382,7 @@
 				_this.infoForm.country = row.CountryName
 				_this.infoForm.shopName = row.Shop
 				_this.infoForm.asin = row.ASIN
+				_this.infoForm.disType = row.DiscountsTypeName
 				_this.infoForm.amazonNo = row.AmazonNumber
 			},
 
@@ -423,6 +431,7 @@
 				_this.infoForm.country = row.CountryName
 				_this.infoForm.shopName = row.Shop
 				_this.infoForm.asin = row.ASIN
+				_this.infoForm.disType = row.DiscountsTypeName
 				_this.infoForm.amazonNo = row.AmazonNumber
 				_this.infoForm.reviewLink = row.CommontLink
 				_this.infoForm.reviewImg = row.CommontImage
