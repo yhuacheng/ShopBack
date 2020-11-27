@@ -4,7 +4,7 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="searchForm">
 				<el-form-item label="搜索内容">
-					<el-input size="small" v-model="searchForm.keyword" placeholder="产品名/店铺名/ASIN/买家ID"></el-input>
+					<el-input size="small" v-model="searchForm.keyword" placeholder="商品名/店铺名/ASIN/买家ID"></el-input>
 				</el-form-item>
 				<el-form-item label="国家" prop="country">
 					<el-select v-model="searchForm.country" placeholder="请选择国家" size="small">

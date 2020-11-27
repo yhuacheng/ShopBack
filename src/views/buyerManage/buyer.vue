@@ -33,7 +33,7 @@
 					<el-link type="primary" :underline="false" :href="scope.row.ProfileUrl" target="_blank">{{scope.row.ProfileUrl}}</el-link>
 				</template>
 			</el-table-column>
-			<el-table-column prop="ProfileImage" label="亚马逊介绍截图" align="center" width="150">
+			<el-table-column prop="ProfileImage" label="亚马逊介绍截图" align="center" width="130">
 				<template slot-scope="scope">
 					<img style="width: 60px;height: 40px;" v-if="scope.row.ProfileImage" :src="$IMGURL+scope.row.ProfileImage"
 					 @click.stop="showImage($IMGURL+scope.row.ProfileImage)" />
@@ -46,6 +46,7 @@
 					<span class="danger" v-if="scope.row.State===-1">禁用</span>
 				</template>
 			</el-table-column>
+			<el-table-column prop="TimeOutCount" label="月超时订单" align="center"></el-table-column>
 			<el-table-column label="操作" align="center" width="380">
 				<template v-slot="scope">
 					<el-button v-if="scope.row.State===-1" size="small" type="success" @click="handleEdit(scope.$index, scope.row,1)">启用</el-button>

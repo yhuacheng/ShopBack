@@ -64,10 +64,21 @@
 				</template>
 			</el-table-column>
 			<el-table-column prop="CountryName" label="所属国家" align="center"></el-table-column>
+			<el-table-column prop="ASIN" label="ASIN" align="center" width="120"></el-table-column>
 			<el-table-column prop="DiscountsTypeName" label="优惠类别" align="center"></el-table-column>
 			<el-table-column prop="ProductTypeName" label="商品类别" align="center"></el-table-column>
 			<el-table-column prop="Grade" label="商品等级" align="center"></el-table-column>
 			<el-table-column prop="Number" label="库存" align="center"></el-table-column>
+			<el-table-column prop="Price" label="原价" align="center">
+				<template slot-scope="scope">
+					<span>{{scope.row.Price}}{{scope.row.Currency}}</span>
+				</template>
+			</el-table-column>
+			<el-table-column prop="Discount" label="折扣" align="center">
+				<template slot-scope="scope">
+					<span>{{scope.row.Discount}}%</span>
+				</template>
+			</el-table-column>
 			<el-table-column prop="PresentPrice" label="现价" align="center">
 				<template slot-scope="scope">
 					<div>{{scope.row.PresentPrice}}{{scope.row.Currency}}</div>
@@ -79,7 +90,7 @@
 					<span>{{scope.row.Commission}}{{scope.row.Currency}}</span>
 				</template>
 			</el-table-column>
-			<el-table-column prop="AddTime" label="添加时间" align="center"></el-table-column>
+			<el-table-column prop="AddTime" label="添加时间" align="center" width="92"></el-table-column>
 			<el-table-column prop="State" label="状态" align="center">
 				<template slot-scope="scope">
 					<el-tag size="small" type="danger" v-if="scope.row.State===-1">未上架</el-tag>

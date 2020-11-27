@@ -21,6 +21,7 @@
 			<el-table-column prop="CountryName" label="国家" align="center"></el-table-column>
 			<el-table-column prop="CounteyShorthand" label="英文简称" align="center"></el-table-column>
 			<el-table-column prop="Currency" label="货币符号" align="center"></el-table-column>
+			<el-table-column prop="Rate" label="汇率" align="center"></el-table-column>
 			<el-table-column label="操作" align="center" width="100">
 				<template v-slot="scope">
 					<el-button size="small" type="primary" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -47,6 +48,9 @@
 				</el-form-item>
 				<el-form-item label="货币符号" prop="currency">
 					<el-input v-model="editForm.currency"></el-input>
+				</el-form-item>
+				<el-form-item label="汇率" prop="rate">
+					<el-input v-model="editForm.rate"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -86,7 +90,8 @@
 				editForm: {
 					name: '',
 					simple: '',
-					currency: ''
+					currency: '',
+					rate: ''
 				},
 				rules: {
 					name: {
@@ -103,7 +108,18 @@
 						required: true,
 						message: '请输入货币符号',
 						trigger: 'blur'
-					}
+					},
+					rate: [{
+							required: true,
+							message: '请输入货币汇率',
+							trigger: 'blur'
+						},
+						{
+							pattern: /^[0-9]+([.]{1}[0-9]+){0,1}$/,
+							message: '汇率格式不正确',
+							trigger: ['blur']
+						}
+					],
 				}
 			}
 		},
@@ -162,6 +178,7 @@
 				_this.editForm.name = row.CountryName
 				_this.editForm.simple = row.CounteyShorthand
 				_this.editForm.currency = row.Currency
+				_this.editForm.rate = row.Rate
 			},
 
 			//新增提交
@@ -173,7 +190,8 @@
 						let params = {
 							CountryName: _this.editForm.name,
 							CounteyShorthand: _this.editForm.simple,
-							Currency: _this.editForm.currency
+							Currency: _this.editForm.currency,
+							Rate: _this.editForm.rate
 						}
 						countryAdd(params).then(res => {
 							_this.btnLoading = false
@@ -196,7 +214,8 @@
 							Id: _this.selectId,
 							CountryName: _this.editForm.name,
 							CounteyShorthand: _this.editForm.simple,
-							Currency: _this.editForm.currency
+							Currency: _this.editForm.currency,
+							Rate: _this.editForm.rate
 						}
 						countryEdit(params).then(res => {
 							_this.btnLoading = false
@@ -218,7 +237,8 @@
 				_this.editForm = {
 					name: '',
 					simple: '',
-					currency: ''
+					currency: '',
+					rate: ''
 				}
 			},
 
