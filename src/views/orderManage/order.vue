@@ -89,7 +89,7 @@
 					<el-tag size="small" type="danger" v-if="scope.row.State==-2">已取消</el-tag>
 					<el-tag size="small" type="danger" v-if="scope.row.State==-3">超时</el-tag>
 					<br>
-					<span v-if="scope.row.Remark" class="danger">{{scope.row.Remark}}</span>
+					<span v-if="(scope.row.State==5 || scope.row.State==-2 || scope.row.State==-3) && scope.row.Remark" class="danger">{{scope.row.Remark}}</span>
 				</template>
 			</el-table-column>
 			<el-table-column label="操作" align="center" width="180">
@@ -431,7 +431,7 @@
 				_this.infoForm.country = row.CountryName
 				_this.infoForm.shopName = row.Shop
 				_this.infoForm.asin = row.ASIN
-				_this.infoForm.disType = row.DiscountsTypeName
+				_this.infoForm.disType = row.Name
 				_this.infoForm.amazonNo = row.AmazonNumber
 				_this.infoForm.reviewLink = row.CommontLink
 				_this.infoForm.reviewImg = row.CommontImage
