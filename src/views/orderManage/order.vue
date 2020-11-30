@@ -24,7 +24,8 @@
 						<el-option value="2" label="待评价"></el-option>
 						<el-option value="3" label="待审核评价"></el-option>
 						<el-option value="4" label="已完成"></el-option>
-						<el-option value="5" label="失败"></el-option>
+						<el-option value="5" label="单号审核不通过"></el-option>
+						<el-option value="6" label="评价审核不通过"></el-option>
 						<el-option value="-2" label="已取消"></el-option>
 						<el-option value="-3" label="超时"></el-option>
 					</el-select>
@@ -85,7 +86,8 @@
 					<el-tag size="small" type="info" v-if="scope.row.State==2">待评价</el-tag>
 					<el-tag size="small" type="warning" v-if="scope.row.State==3">待审核评价</el-tag>
 					<el-tag size="small" type="success" v-if="scope.row.State==4">已完成</el-tag>
-					<el-tag size="small" type="danger" v-if="scope.row.State==5">失败</el-tag>
+					<el-tag size="small" type="danger" v-if="scope.row.State==5">单号不通过</el-tag>
+					<el-tag size="small" type="danger" v-if="scope.row.State==6">评价不通过</el-tag>
 					<el-tag size="small" type="danger" v-if="scope.row.State==-2">已取消</el-tag>
 					<el-tag size="small" type="danger" v-if="scope.row.State==-3">超时</el-tag>
 					<br>
