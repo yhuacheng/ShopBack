@@ -50,7 +50,7 @@
 			<el-table-column prop="CountryName" label="国家" align="center"></el-table-column>
 			<el-table-column prop="Shop" label="店铺" align="center" :show-overflow-tooltip='true'></el-table-column>
 			<el-table-column prop="ASIN" label="ASIN" align="center"></el-table-column>
-			<el-table-column prop="BuyerId" label="买家ID" align="center"></el-table-column>
+			<el-table-column prop="BuyerId" label="买家ID" align="center" width="70"></el-table-column>
 			<el-table-column prop="BuyTotal" label="购买价格" align="center">
 				<template slot-scope="scope">
 					<div>{{scope.row.BuyTotal}}{{scope.row.Currency}}</div>
@@ -66,10 +66,10 @@
 			<el-table-column prop="AmazonNumber" label="亚马逊单号" align="center" width="100"></el-table-column>
 			<el-table-column prop="BuyTime" label="购买时间" align="center" width="92"></el-table-column>
 			<el-table-column prop="CommontLink" label="评价链接" align="center"></el-table-column>
-			<el-table-column prop="CommontImage" label="评价截图" align="center">
+			<el-table-column prop="PJImage" label="评价截图" align="center" width="150">
 				<template slot-scope="scope">
-					<img style="width: 40px;height: 40px;" v-if="scope.row.CommontImage" :src="$IMGURL+scope.row.CommontImage"
-					 @click.stop="showImage($IMGURL+scope.row.CommontImage)" />
+					<img style="width: 40px;height: 40px;margin-right: 2px;" v-for="item in scope.row.PJImage" v-if="item" :src="$IMGURL+item"
+					 @click.stop="showImage($IMGURL+item)" />
 				</template>
 			</el-table-column>
 			<el-table-column prop="FKImage" label="返款截图" align="center" width="150">
@@ -78,7 +78,7 @@
 					 @click.stop="showImage(item)" />
 				</template>
 			</el-table-column>
-			<el-table-column prop="State" label="状态" align="center" width="120" :show-overflow-tooltip='true'>
+			<el-table-column prop="State" label="状态" align="center" width="110" :show-overflow-tooltip='true'>
 				<template slot-scope="scope">
 					<el-tag size="small" type="info" v-if="scope.row.State==-1">待购买</el-tag>
 					<el-tag size="small" type="primary" v-if="scope.row.State==1">待审核购买</el-tag>
@@ -89,7 +89,7 @@
 					<el-tag size="small" type="danger" v-if="scope.row.State==-2">已取消</el-tag>
 					<el-tag size="small" type="danger" v-if="scope.row.State==-3">超时</el-tag>
 					<br>
-					<span v-if="(scope.row.State==5 || scope.row.State==-2 || scope.row.State==-3) && scope.row.Remark" class="danger">{{scope.row.Remark}}</span>
+					<span v-if="scope.row.Remark" class="danger">{{scope.row.Remark}}</span>
 				</template>
 			</el-table-column>
 			<el-table-column label="操作" align="center" width="180">
@@ -177,9 +177,9 @@
 					<el-link :underline="false" v-if="infoForm.reviewLink" :href="infoForm.reviewLink" target="_blank" type="primary">{{infoForm.reviewLink}}</el-link>
 				</el-form-item>
 				<el-form-item label="评价截图：">
-					<el-link :underline="false" v-if="infoForm.reviewImg" :href="$IMGURL+infoForm.reviewImg" target="_blank">
-						<span class="success">温馨提示：点击图片可查看原图</span><br>
-						<img :src="$IMGURL+infoForm.reviewImg" style="height: 100px;" />
+					<span class="success">温馨提示：点击图片可查看原图</span><br>
+					<el-link :underline="false" v-for="item in infoForm.reviewImg" v-if="item" :href="$IMGURL+item" target="_blank">
+						<img :src="$IMGURL+item" style="height: 100px;margin-right: 10px;" />
 					</el-link>
 				</el-form-item>
 			</el-form>
@@ -347,6 +347,7 @@
 					_this.listLoading = false
 					_this.tableData = res.result.Entity
 					_this.tableData.forEach((item, idx) => {
+						item.PJImage = item.CommontImage ? item.CommontImage.split(',') : []
 						item.FKImage = item.BuyImage ? item.BuyImage.split(',') : []
 					})
 					_this.total = Number(res.result.TotalCount)
@@ -434,7 +435,7 @@
 				_this.infoForm.disType = row.Name
 				_this.infoForm.amazonNo = row.AmazonNumber
 				_this.infoForm.reviewLink = row.CommontLink
-				_this.infoForm.reviewImg = row.CommontImage
+				_this.infoForm.reviewImg = row.CommontImage ? row.CommontImage.split(',') : []
 			},
 
 			//提交评价审核结果
