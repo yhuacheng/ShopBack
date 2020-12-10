@@ -90,6 +90,7 @@
 					<span>{{scope.row.Commission}}{{scope.row.Currency}}</span>
 				</template>
 			</el-table-column>
+			<el-table-column prop="UserId" label="客户编码" align="center"></el-table-column>
 			<el-table-column prop="AddTime" label="添加时间" align="center" width="92"></el-table-column>
 			<el-table-column prop="State" label="状态" align="center">
 				<template slot-scope="scope">
