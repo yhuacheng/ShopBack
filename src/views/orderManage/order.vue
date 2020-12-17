@@ -66,7 +66,11 @@
 			<el-table-column prop="AddTime" label="下单时间" align="center" width="92"></el-table-column>
 			<el-table-column prop="AmazonNumber" label="亚马逊单号" align="center" width="100"></el-table-column>
 			<el-table-column prop="BuyTime" label="购买时间" align="center" width="92"></el-table-column>
-			<el-table-column prop="CommontLink" label="评价链接" align="center"></el-table-column>
+			<el-table-column prop="CommontLink" label="评价链接" align="center" :show-overflow-tooltip='true'>
+				<template slot-scope="scope">
+					<el-link type="primary" :underline="false" :href="scope.row.CommontLink" target="_blank">{{scope.row.CommontLink}}</el-link>
+				</template>
+			</el-table-column>
 			<el-table-column prop="PJImage" label="评价截图" align="center" width="150">
 				<template slot-scope="scope">
 					<img style="width: 40px;height: 40px;margin-right: 2px;" v-for="item in scope.row.PJImage" v-if="item" :src="$IMGURL+item"
