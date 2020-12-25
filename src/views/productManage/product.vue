@@ -37,6 +37,9 @@
 					<el-button size="small" type="primary" @click="handleAdd">新增</el-button>
 					<el-button type="warning" size="small" @click="exportExcel">导出</el-button>
 					<el-button type="danger" size="small" @click="drModal=true">导入商品</el-button>
+					<el-button size="small" type="primary" @click="handleColor" :disabled="selsData.length!=1">商品颜色</el-button>
+					<el-button size="small" type="primary" @click="handleSize" :disabled="selsData.length!=1">商品尺码</el-button>
+					<el-button size="small" type="primary" @click="handleFormat" :disabled="selsData.length!=1">创建多规格</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
@@ -280,6 +283,24 @@
 			</el-form>
 		</el-dialog>
 
+		<!-- 颜色 -->
+		<el-dialog :title="title" :visible.sync="colorModal" width="70%">
+			<color :productId='productId' v-if="colorModal"></color>
+			<br><br>
+		</el-dialog>
+
+		<!-- 尺码 -->
+		<el-dialog :title="title" :visible.sync="sizeModal" width="50%">
+			<size :productId='productId' v-if="sizeModal"></size>
+			<br><br>
+		</el-dialog>
+
+		<!-- 规格 -->
+		<el-dialog :title="title" :visible.sync="formatModal" width="70%" :before-close="closeFormatModal">
+			<format :productId='productId' v-if="formatModal"></format>
+			<br><br>
+		</el-dialog>
+
 	</section>
 </template>
 
@@ -305,10 +326,17 @@
 	import 'quill/dist/quill.snow.css'
 	import 'quill/dist/quill.bubble.css'
 
+	import color from './color.vue'
+	import size from './size.vue'
+	import format from './format.vue'
+
 	export default {
 		name: 'product',
 		components: {
-			quillEditor
+			quillEditor,
+			color,
+			size,
+			format
 		},
 		data() {
 			return {
@@ -327,6 +355,7 @@
 				levelData: [],
 				selsData: [],
 				selectId: '',
+				productId: '',
 				discountDis: false,
 				searchForm: {
 					name: '',
@@ -366,6 +395,9 @@
 				},
 				ViewImageModal: false,
 				ViewImageUrl: '',
+				colorModal: false,
+				sizeModal: false,
+				formatModal: false,
 				rules: {
 					name: {
 						required: true,
@@ -938,6 +970,48 @@
 			handleCurrentChange(val) {
 				let _this = this
 				_this.pageIndex = val
+				_this.getData()
+			},
+
+			//颜色
+			handleColor() {
+				let _this = this
+				_this.productId = _this.selsData[0].Id
+				let pName = _this.selsData[0].ProductName
+				if (pName.length > 50) {
+					pName = pName.substring(0, 50) + '...'
+				}
+				_this.title = "商品【" + pName + "】颜色"
+				_this.colorModal = true
+			},
+
+			//尺码
+			handleSize() {
+				let _this = this
+				_this.productId = _this.selsData[0].Id
+				let pName = _this.selsData[0].ProductName
+				if (pName.length > 50) {
+					pName = pName.substring(0, 50) + '...'
+				}
+				_this.title = "商品【" + pName + "】尺码"
+				_this.sizeModal = true
+			},
+
+			//规格
+			handleFormat() {
+				let _this = this
+				_this.productId = _this.selsData[0].Id
+				let pName = _this.selsData[0].ProductName
+				if (pName.length > 50) {
+					pName = pName.substring(0, 50) + '...'
+				}
+				_this.title = "商品【" + pName + "】规格"
+				_this.formatModal = true
+			},
+			//关闭规格
+			closeFormatModal() {
+				let _this = this
+				_this.formatModal = false
 				_this.getData()
 			},
 

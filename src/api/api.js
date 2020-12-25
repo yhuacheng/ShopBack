@@ -16,6 +16,19 @@ export const productEdit = (params) => postForm('/api/ProductManage/UpdateProduc
 export const productState = (params) => post('/api/ProductManage/Upanddown', params) //商品上架下架
 export const productDelete = (params) => post('/api/ProductManage/DeleteProductManage', params) //商品删除
 
+export const colorList = (params) => get('/api/ProductManage/GeteColorList', params) //颜色列表
+export const colorAdd = (params) => postForm('/api/ProductManage/AddColor', params) //颜色新增
+export const colorEdit = (params) => post('/api/ProductManage/UpdateProductColor', params) //颜色修改
+export const colorImg = (params) => postForm('/api/ProductManage/Color', params) //颜色修改时的图片上传
+
+export const sizeList = (params) => get('/api/ProductManage/GetSizeList', params) //商品尺码列表
+export const sizeAdd = (params) => post('/api/ProductManage/AddSize', params) //商品尺码新增
+export const sizeEdit = (params) => post('/api/ProductManage/UpdateProductSzie', params) //商品尺码修改
+
+export const formatList = (params) => get('/api/ProductManage/GetSizeColorList', params) //商品规格列表
+export const formatAdd = (params) => post('/api/ProductManage/AddProductManageSizeColor', params) //商品规格新增
+export const formatEdit = (params) => post('/api/ProductManage/UpdateProductSizeColor', params) //商品规格修改
+
 export const discountsType = (params) => get('/api/DiscountsType/GetModelList', params) //折扣类别
 
 export const userList = (params) => get('/api/BackUser/GetBackUserList', params) //用户列表
