@@ -42,10 +42,17 @@
 		<el-table border :data="tableData" @selection-change="selsChange" v-loading="listLoading" style="width: 100%" id="tableData"
 		 ref='tableData'>
 			<el-table-column type="index" label="#" align="center"></el-table-column>
-			<el-table-column prop="ProductName" label="商品名称" align="center" :show-overflow-tooltip='true'></el-table-column>
-			<el-table-column prop="ProductUrl" label="商品图" align="center">
+			<el-table-column prop="ProductName" label="商品名称" align="center" :show-overflow-tooltip='true'>
 				<template slot-scope="scope">
-					<img style="width: 40px;height: 40px;" v-if="scope.row.ProductUrl" :src="scope.row.ProductUrl" @click.stop="showImage(scope.row.ProductUrl)" />
+					<span>{{scope.row.ProductName}}</span>
+					<br>
+					<span class="info fz12" v-if="scope.row.Color">{{scope.row.Color}}</span>
+					<span class="info fz12 ml10" v-if="scope.row.Size">{{scope.row.Size}}</span>
+				</template>
+			</el-table-column>
+			<el-table-column prop="ImgUrl" label="商品图" align="center">
+				<template slot-scope="scope">
+					<img style="width: 40px;height: 40px;" v-if="scope.row.ImgUrl" :src="scope.row.ImgUrl" @click.stop="showImage(scope.row.ImgUrl)" />
 				</template>
 			</el-table-column>
 			<el-table-column prop="CountryName" label="国家" align="center"></el-table-column>
@@ -210,12 +217,12 @@
 					<el-input v-model="checkReviewForm.remark"></el-input>
 				</el-form-item>
 				<!-- 返款截图 图片文件与表单数据一起提交-->
-				<el-form-item label="返款截图：" prop="picture">
+				<el-form-item v-if="checkReviewForm.state==1" label="返款截图：" prop="picture">
 					<el-upload action="" list-type="picture-card" multiple :limit="3" :file-list="fileListAdd" :on-remove="handleAddRemove"
 					 :on-change="handleAddChange" :auto-upload="false" accept="image/jpeg,image/png,image/gif,image/bmp" :class="{'hide':hideUploadAdd}"
 					 :disabled="disUpload">
 						<i class="el-icon-plus"></i>
-						<div class="el-upload__tip warning" slot="tip">注意：最多上传3张图片，每张图片不能大于5M</div>
+						<div class="el-upload__tip warning" slot="tip"><span class="danger">( * 必填 )</span> 注意：最多上传3张图片，每张图片不能大于5M</div>
 					</el-upload>
 				</el-form-item>
 			</el-form>
@@ -353,6 +360,7 @@
 					_this.listLoading = false
 					_this.tableData = res.result.Entity
 					_this.tableData.forEach((item, idx) => {
+						item.ImgUrl = item.Picture ? item.Picture.split(',')[0] : item.ProductUrl
 						item.PJImage = item.CommontImage ? item.CommontImage.split(',') : []
 						item.FKImage = item.BuyImage ? item.BuyImage.split(',') : []
 					})
@@ -450,25 +458,50 @@
 				_this.$refs.checkReviewForm.validate((valid) => {
 					if (valid) {
 						_this.btnLoading = true
+						//当状态为审核通过时必须上传返款截图
+						if (_this.checkReviewForm.state == 1) {
+							if (_this.fileListAdd.length > 0) {
+								//创建formData 用formData形式传参
+								let params = new FormData()
+								params.append('Id', _this.infoForm.orderId)
+								params.append('State', _this.checkReviewForm.state)
+								params.append('Remark', '')
+								params.append('Integral', _this.checkReviewForm.points)
+								params.append('Grade', _this.checkReviewForm.score)
+								_this.fileListAdd.map(item => {
+									params.append("image", item.raw);
+								})
+								orderCheckReview(params).then(res => {
+									_this.btnLoading = false
+									_this.closeCheckReviewModal()
+									_this.getData()
+								}).catch((e) => {
+									_this.btnLoading = false
+								})
+							} else {
+								this.$message.error('必须上传返款截图')
+								_this.btnLoading = false
+							}
+						} else {
+							//创建formData 用formData形式传参
+							let params = new FormData()
+							params.append('Id', _this.infoForm.orderId)
+							params.append('State', _this.checkReviewForm.state)
+							params.append('Remark', _this.checkReviewForm.remark)
+							params.append('Integral', _this.checkReviewForm.points)
+							params.append('Grade', _this.checkReviewForm.score)
+							_this.fileListAdd.map(item => {
+								params.append("image", '');
+							})
+							orderCheckReview(params).then(res => {
+								_this.btnLoading = false
+								_this.closeCheckReviewModal()
+								_this.getData()
+							}).catch((e) => {
+								_this.btnLoading = false
+							})
+						}
 
-						//创建formData 用formData形式传参
-						let params = new FormData()
-						params.append('Id', _this.infoForm.orderId)
-						params.append('State', _this.checkReviewForm.state)
-						params.append('Remark', _this.checkReviewForm.remark)
-						params.append('Integral', _this.checkReviewForm.points)
-						params.append('Grade', _this.checkReviewForm.score)
-						_this.fileListAdd.map(item => {
-							params.append("image", item.raw);
-						})
-
-						orderCheckReview(params).then(res => {
-							_this.btnLoading = false
-							_this.closeCheckReviewModal()
-							_this.getData()
-						}).catch((e) => {
-							_this.btnLoading = false
-						})
 					}
 				})
 			},
