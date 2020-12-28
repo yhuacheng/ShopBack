@@ -25,10 +25,17 @@
 			</el-table-column>
 			<el-table-column prop="Email" label="邮箱" align="center"></el-table-column>
 			<el-table-column prop="BuyerGrade" label="等级" align="center"></el-table-column>
-			<el-table-column prop="GradeScore" label="账号等级分" align="center"></el-table-column>
+			<el-table-column prop="GradeScore" label="账号分" align="center"></el-table-column>
 			<el-table-column prop="BuyerScore" label="会员积分" align="center"></el-table-column>
-			<el-table-column prop="PaypalAccount" label="PP账号" align="center"></el-table-column>
-			<el-table-column prop="ProfileUrl" label="亚马逊个人介绍" align="center" width="150" :show-overflow-tooltip='true'>
+			<el-table-column prop="PaypalAccount" label="PP账号" align="center" width="130" :show-overflow-tooltip='true'>
+				<template slot-scope="scope">
+					<span>{{scope.row.PaypalAccount}}</span>
+					<div v-if="scope.row.PaypalType==-1">
+						<el-button type="danger" size="mini" @click="handleEdit(scope.$index, scope.row,6)">有新PP号待审</el-button>
+					</div>
+				</template>
+			</el-table-column>
+			<el-table-column prop="ProfileUrl" label="亚马逊个人介绍" align="center" width="130" :show-overflow-tooltip='true'>
 				<template slot-scope="scope">
 					<el-link type="primary" :underline="false" :href="scope.row.ProfileUrl" target="_blank">{{scope.row.ProfileUrl}}</el-link>
 				</template>
@@ -46,7 +53,7 @@
 					<span class="danger" v-if="scope.row.State===-1">禁用</span>
 				</template>
 			</el-table-column>
-			<el-table-column prop="TimeOutCount" label="月超时订单" align="center"></el-table-column>
+			<el-table-column prop="TimeOutCount" label="月超时单" align="center"></el-table-column>
 			<el-table-column label="操作" align="center" width="380">
 				<template v-slot="scope">
 					<el-button v-if="scope.row.State===-1" size="small" type="success" @click="handleEdit(scope.$index, scope.row,1)">启用</el-button>
@@ -123,6 +130,7 @@
 				},
 				ViewImageModal: false,
 				ViewImageUrl: '',
+				newPaypay: ''
 			}
 		},
 		created() {
@@ -150,6 +158,7 @@
 				let _this = this
 				_this.selectId = row.Id
 				_this.buyerName = row.LastName
+				_this.newPaypay = row.PaypalBak
 				if (val == 1 || val == -1) {
 					_this.handleState(val)
 				}
@@ -163,6 +172,9 @@
 				}
 				if (val == 5) {
 					_this.handlePswd()
+				}
+				if (val == 6) {
+					_this.handleCheckPP()
 				}
 			},
 
@@ -182,7 +194,8 @@
 					let params = {
 						Type: 1,
 						Id: _this.selectId,
-						KeyWord: val
+						KeyWord: val,
+						State: 0
 					}
 					buyerEdit(params).then((res) => {
 						_this.getData()
@@ -200,6 +213,7 @@
 							Type: 2,
 							Id: _this.selectId,
 							KeyWord: _this.editForm.level,
+							State: 0
 						}
 						buyerEdit(params).then(res => {
 							_this.btnLoading = false
@@ -251,7 +265,8 @@
 				let params = {
 					Type: val,
 					Id: _this.selectId,
-					KeyWord: value
+					KeyWord: value,
+					State: 0
 				}
 				buyerEdit(params).then(res => {
 					_this.getData()
@@ -272,12 +287,43 @@
 					let params = {
 						Type: 5,
 						Id: _this.selectId,
-						KeyWord: value
+						KeyWord: value,
+						State: 0
 					}
 					buyerEdit(params).then(res => {
 						_this.getData()
 					}).catch((e) => {})
 				}).catch(() => {})
+			},
+
+			//用户修改PP审核
+			handleCheckPP(val) {
+				let _this = this
+				_this.$confirm('买家【' + _this.buyerName + '】申请将PP号修改为【' + _this.newPaypay + '】是否审核通过？', '信息提示', {
+					confirmButtonText: '通过',
+					cancelButtonText: '不通过',
+					type: 'warning'
+				}).then(() => {
+					let params = {
+						Type: 6,
+						Id: _this.selectId,
+						KeyWord: '',
+						State: 1
+					}
+					buyerEdit(params).then((res) => {
+						_this.getData()
+					})
+				}).catch(() => {
+					let params = {
+						Type: 6,
+						Id: _this.selectId,
+						KeyWord: '',
+						State: -2
+					}
+					buyerEdit(params).then((res) => {
+						_this.getData()
+					})
+				})
 			},
 
 			//查看大图
