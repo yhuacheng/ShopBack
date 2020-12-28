@@ -4,7 +4,7 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="searchForm">
 				<el-form-item label="商品搜索">
-					<el-input size="small" v-model="searchForm.name" placeholder="商品名称/ASIN/客户编码"></el-input>
+					<el-input size="small" v-model="searchForm.name" placeholder="商品名称/ASIN/客户编码" style="width: 216px;"></el-input>
 				</el-form-item>
 				<el-form-item label="所属国家">
 					<el-select v-model="searchForm.country" placeholder="请选择所属国家" size="small">
@@ -25,10 +25,24 @@
 					</el-select>
 				</el-form-item>
 				<el-form-item label="状态">
-					<el-select v-model="searchForm.state" placeholder="状态" size="small">
+					<el-select v-model="searchForm.state" placeholder="请选择" size="small">
 						<el-option value="0" label="全部状态"></el-option>
 						<el-option value="-1" label="未上架"></el-option>
 						<el-option value="1" label="已上架"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="是否热卖">
+					<el-select v-model="searchForm.hotState" placeholder="请选择" size="small">
+						<el-option value="0" label="全部状态"></el-option>
+						<el-option value="-1" label="非热卖"></el-option>
+						<el-option value="1" label="热卖"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="是否限免">
+					<el-select v-model="searchForm.freeState" placeholder="请选择" size="small">
+						<el-option value="0" label="全部状态"></el-option>
+						<el-option value="-1" label="非限免"></el-option>
+						<el-option value="1" label="限免"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item>
@@ -52,7 +66,10 @@
 			<el-table-column prop="ProductName" label="商品名称" align="center" :show-overflow-tooltip='true'>
 				<template slot-scope="scope">
 					<span>{{scope.row.ProductName}}</span>
-					<div><span v-if="scope.row.Hot==1"><span class="danger fz10">热卖</span></span></div>
+					<div>
+						<span v-if="scope.row.Hot==1"><span class="danger fz10">热卖</span></span>
+						<span v-if="scope.row.Free==1"><span class="danger fz10 ml10">限免</span></span>
+					</div>
 				</template>
 			</el-table-column>
 			<el-table-column prop="ProductUrl" label="商品图" align="center">
@@ -138,10 +155,16 @@
 							</div>
 						</el-form-item>
 					</el-col>
-					<el-col :span="24">
+					<el-col :span="12">
 						<el-form-item label="是否热卖" prop="hot">
 							<el-checkbox v-model="editForm.hot" :true-label="1" :false-label="-1">
-								热卖商品 （勾选此选项后，该商品会展示在页面的热卖商品(Hot Products)栏目中）</el-checkbox>
+								热卖商品 （勾选此选项后，该商品会展示在页面的热卖商品栏目中）</el-checkbox>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="是否限免" prop="hot">
+							<el-checkbox v-model="editForm.free" :true-label="1" :false-label="-1">
+								限免商品 （勾选此选项后，该商品会展示在页面的限免商品栏目中）</el-checkbox>
 						</el-form-item>
 					</el-col>
 					<el-col :span="24">
@@ -362,7 +385,9 @@
 					country: '0',
 					disType: '0',
 					type: '0',
-					state: '0'
+					state: '0',
+					hotState: '0',
+					freeState: '0'
 				},
 				editForm: {
 					name: '',
@@ -382,7 +407,8 @@
 					integral: '',
 					description: '',
 					code: '',
-					hot: -1
+					hot: -1,
+					free: -1
 				},
 				drModal: false,
 				fileListAdd: [],
@@ -520,6 +546,8 @@
 					DiscountsTypeId: _this.searchForm.disType,
 					ProductTypeId: _this.searchForm.type,
 					State: _this.searchForm.state,
+					HotState: _this.searchForm.hotState,
+					FreeState: _this.searchForm.freeState,
 					pageIndex: _this.pageIndex,
 					pageSize: _this.pageSize
 				}
@@ -619,7 +647,9 @@
 						country: '0',
 						disType: '0',
 						type: '0',
-						state: '0'
+						state: '0',
+						hotState: '0',
+						freeState: '0'
 					},
 					_this.getData()
 			},
@@ -658,6 +688,7 @@
 				_this.editForm.currency = row.Currency
 				_this.editForm.description = row.ProductDescribe
 				_this.editForm.hot = row.Hot
+				_this.editForm.free = row.Free
 
 				//图片转换为 url:'xxx' 格式才能回显
 				let img = ''
@@ -705,7 +736,8 @@
 					integral: '',
 					description: '',
 					code: '',
-					hot: -1
+					hot: -1,
+					free: -1
 				}
 				_this.fileListAdd = []
 				_this.hideUploadAdd = false
@@ -771,6 +803,7 @@
 						params.append('ProductDescribe', _this.editForm.description)
 						params.append('UserId', _this.editForm.code)
 						params.append('Hot', _this.editForm.hot)
+						params.append('Free', _this.editForm.free)
 						_this.fileListAdd.map(item => {
 							params.append("image", item.raw);
 						})
@@ -829,6 +862,7 @@
 						params.append('ProductDescribe', _this.editForm.description)
 						params.append('UserId', _this.editForm.code)
 						params.append('Hot', _this.editForm.hot)
+						params.append('Free', _this.editForm.free)
 						_this.fileListAdd.map(item => {
 							params.append("image", item.raw);
 						});
