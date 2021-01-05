@@ -253,8 +253,8 @@
 							let params = {
 								Id: _this.productId,
 								Data: [{
-									ProductColorId: _this.editForm.color,
-									ProductSizeId: _this.editForm.size,
+									ProductColorId: _this.editForm.color ? _this.editForm.color : 0,
+									ProductSizeId: _this.editForm.size ? _this.editForm.size : 0,
 									SizeColorNumber: _this.editForm.num,
 									SizeColorASIN: _this.editForm.asin,
 									SizeColorPrice: _this.editForm.price,
