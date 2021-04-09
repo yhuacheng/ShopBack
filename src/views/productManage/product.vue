@@ -4,24 +4,28 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="searchForm">
 				<el-form-item label="商品搜索">
-					<el-input size="small" v-model="searchForm.name" placeholder="商品名称/ASIN/客户编码" style="width: 216px;"></el-input>
+					<el-input size="small" v-model="searchForm.name" placeholder="商品名称/ASIN/客户编码" style="width: 216px;">
+					</el-input>
 				</el-form-item>
 				<el-form-item label="所属国家">
 					<el-select v-model="searchForm.country" placeholder="请选择所属国家" size="small">
 						<el-option value="0" label="全部国家"></el-option>
-						<el-option v-for="item in countryData" :key="item.Id" :label="item.CountryName" :value="item.Id"></el-option>
+						<el-option v-for="item in countryData" :key="item.Id" :label="item.CountryName"
+							:value="item.Id"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="优惠类别">
 					<el-select v-model="searchForm.disType" placeholder="请选择优惠类别" size="small">
 						<el-option value="0" label="全部类别"></el-option>
-						<el-option v-for="item in disTypeData" :key="item.Id" :label="item.Name" :value="item.Id"></el-option>
+						<el-option v-for="item in disTypeData" :key="item.Id" :label="item.Name" :value="item.Id">
+						</el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="商品类别">
 					<el-select v-model="searchForm.type" placeholder="请选择所属类别" size="small">
 						<el-option value="0" label="全部类别"></el-option>
-						<el-option v-for="item in typeData" :key="item.Id" :label="item.Name" :value="item.Id"></el-option>
+						<el-option v-for="item in typeData" :key="item.Id" :label="item.Name" :value="item.Id">
+						</el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="状态">
@@ -51,16 +55,19 @@
 					<el-button size="small" type="primary" @click="handleAdd">新增</el-button>
 					<el-button type="warning" size="small" @click="exportExcel">导出</el-button>
 					<el-button type="danger" size="small" @click="drModal=true">导入商品</el-button>
-					<el-button size="small" type="primary" @click="handleColor" :disabled="selsData.length!=1">商品颜色</el-button>
-					<el-button size="small" type="primary" @click="handleSize" :disabled="selsData.length!=1">商品尺码</el-button>
-					<el-button size="small" type="primary" @click="handleFormat" :disabled="selsData.length!=1">创建多规格</el-button>
+					<el-button size="small" type="primary" @click="handleColor" :disabled="selsData.length!=1">商品颜色
+					</el-button>
+					<el-button size="small" type="primary" @click="handleSize" :disabled="selsData.length!=1">商品尺码
+					</el-button>
+					<el-button size="small" type="primary" @click="handleFormat" :disabled="selsData.length!=1">创建多规格
+					</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
 
 		<!--列表-->
-		<el-table border :data="tableData" @selection-change="selsChange" @row-click="rowClick" v-loading="listLoading" style="width: 100%"
-		 id="tableData" ref='tableData'>
+		<el-table border :data="tableData" @selection-change="selsChange" @row-click="rowClick" v-loading="listLoading"
+			style="width: 100%" id="tableData" ref='tableData'>
 			<el-table-column type="selection" align="center"></el-table-column>
 			<el-table-column type="index" label="#" align="center"></el-table-column>
 			<el-table-column prop="ProductName" label="商品名称" align="center" :show-overflow-tooltip='true'>
@@ -74,7 +81,8 @@
 			</el-table-column>
 			<el-table-column prop="ProductUrl" label="商品图" align="center">
 				<template slot-scope="scope">
-					<img style="width: 40px;height: 40px;" v-if="scope.row.ProductUrl" :src="scope.row.ProductUrl" @click.stop="showImage(scope.row.ProductUrl)" />
+					<img style="width: 40px;height: 40px;" v-if="scope.row.ProductUrl" :src="scope.row.ProductUrl"
+						@click.stop="showImage(scope.row.ProductUrl)" />
 				</template>
 			</el-table-column>
 			<el-table-column prop="Type" label="内外单" align="center">
@@ -120,7 +128,8 @@
 			</el-table-column>
 			<el-table-column label="操作" align="center" width="100">
 				<template v-slot="scope">
-					<el-button size="small" type="primary" @click.stop="handleEdit(scope.$index, scope.row)">编辑</el-button>
+					<el-button size="small" type="primary" @click.stop="handleEdit(scope.$index, scope.row)">编辑
+					</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -131,28 +140,36 @@
 			<el-button size="small" type="warning" @click="handleState(-1)" :disabled="selsData.length<1">下架</el-button>
 			<el-button size="small" type="danger" @click="handleDelete()" :disabled="selsData.length<1">删除</el-button>
 			<el-pagination style="float: right;" @size-change="handleSizeChange" @current-change="handleCurrentChange"
-			 :current-page="pageIndex" :page-sizes="[10, 20, 50, 100,1000]" :page-size="10" layout="total, sizes, prev, pager, next, jumper"
-			 :total="total">
+				:current-page="pageIndex" :page-sizes="[10, 20, 50, 100,1000]" :page-size="10"
+				layout="total, sizes, prev, pager, next, jumper" :total="total">
 			</el-pagination>
 		</el-col>
 
 		<!--编辑界面-->
-		<el-dialog :title="title" :visible.sync="editModal" :close-on-click-modal="false" :before-close="closeModal" width="70%">
+		<el-dialog :title="title" :visible.sync="editModal" :close-on-click-modal="false" :before-close="closeModal"
+			width="70%">
 			<el-form :model="editForm" label-width="100px" :rules="rules" ref="editForm">
 				<el-row>
 					<el-col :span="24">
 						<!-- 新增页面商品图片 图片文件与表单数据一起提交-->
 						<el-form-item label="商品图片" prop="picture">
-							<el-upload action="" list-type="picture-card" multiple :limit="6" :file-list="fileListAdd" :on-remove="handleAddRemove"
-							 :on-change="handleAddChange" :auto-upload="false" accept="image/jpeg,image/png,image/gif,image/bmp" :class="{'hide':hideUploadAdd}"
-							 :disabled="disUpload">
+							<draggable v-model="allImage">
+								<!-- 拖拽元素 -->
+								<li v-for="(item, index) in allImage" :key="index" class="drag-li"
+									@mouseenter="mouseEnter(index)" @mouseleave="mouseLeave">
+									<el-image :src="item" class="drag-img"></el-image>
+									<div class="drag-del" @click="onRemoveHandler(index)" v-show="index==isActive">
+										<i class="el-icon-delete"></i>
+									</div>
+								</li>
+							</draggable>
+							<el-upload class="avatar-uploader" name="image" action="/api/ProductManage/ProductPictures"
+								list-type="picture-card" :on-success="handleAvatarSuccessImg" :on-error="handleErrorImg"
+								:before-upload="beforeAvatarUploadImg" accept="image/jpeg,image/png,image/gif,image/bmp"
+								:limit="6" :show-file-list="false" :class="{'hide':hideUploadAdd}">
 								<i class="el-icon-plus"></i>
-								<div class="el-upload__tip warning" slot="tip">注意：最多上传6张图片，第1张为封面图，每张图片不能大于5M，建议上传 600*600 尺寸</div>
+								<div class="el-upload__tip warning" slot="tip">注：最多6张，第1张为封面</div>
 							</el-upload>
-							<div v-if="doType=='edit'">
-								<el-button type="danger" size="mini" @click='editImg'>重新编辑图片</el-button>
-								<el-button type="warning" size="mini" @click='resetImg'>重置商品图片</el-button>
-							</div>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
@@ -174,29 +191,35 @@
 					</el-col>
 					<el-col :span="6">
 						<el-form-item label="所属国家" prop="country">
-							<el-select v-model="editForm.country" placeholder="请选择所属国家" class="w100" @change="getCurrency">
-								<el-option v-for="item in countryData" :key="item.Id" :label="item.CountryName" :value="item.Id"></el-option>
+							<el-select v-model="editForm.country" placeholder="请选择所属国家" class="w100"
+								@change="getCurrency">
+								<el-option v-for="item in countryData" :key="item.Id" :label="item.CountryName"
+									:value="item.Id"></el-option>
 							</el-select>
 						</el-form-item>
 					</el-col>
 					<el-col :span="6">
 						<el-form-item label="优惠类别" prop="disType">
-							<el-select v-model="editForm.disType" placeholder="请选择优惠类别" class="w100" @change="changeDisType">
-								<el-option v-for="item in disTypeData" :key="item.Id" :label="item.Name" :value="item.Id"></el-option>
+							<el-select v-model="editForm.disType" placeholder="请选择优惠类别" class="w100"
+								@change="changeDisType">
+								<el-option v-for="item in disTypeData" :key="item.Id" :label="item.Name"
+									:value="item.Id"></el-option>
 							</el-select>
 						</el-form-item>
 					</el-col>
 					<el-col :span="6">
 						<el-form-item label="商品类别" prop="type">
 							<el-select v-model="editForm.type" placeholder="请选择所属类别" class="w100">
-								<el-option v-for="item in typeData" :key="item.Id" :label="item.Name" :value="item.Id"></el-option>
+								<el-option v-for="item in typeData" :key="item.Id" :label="item.Name" :value="item.Id">
+								</el-option>
 							</el-select>
 						</el-form-item>
 					</el-col>
 					<el-col :span="6">
 						<el-form-item label="商品等级" prop="level">
 							<el-select v-model="editForm.level" placeholder="请选择商品等级" class="w100">
-								<el-option v-for="item in levelData" :key="item.Id" :label="item.Grade" :value="item.Id"></el-option>
+								<el-option v-for="item in levelData" :key="item.Id" :label="item.Grade"
+									:value="item.Id"></el-option>
 							</el-select>
 						</el-form-item>
 					</el-col>
@@ -270,7 +293,8 @@
 					</el-col>
 					<el-col :span="24">
 						<el-form-item label="商品描述" prop="description">
-							<quill-editor v-model="editForm.description" ref="myQuillEditor" class="editor-box" :options="editorOption"></quill-editor>
+							<quill-editor v-model="editForm.description" ref="myQuillEditor" class="editor-box"
+								:options="editorOption"></quill-editor>
 						</el-form-item>
 					</el-col>
 				</el-row>
@@ -278,7 +302,8 @@
 			<div slot="footer" class="dialog-footer">
 				<el-button @click="closeModal">取消</el-button>
 				<el-button type="primary" v-if="doType==='add'" @click="addSubmit" :loading="btnLoading">提交</el-button>
-				<el-button type="primary" v-if="doType==='edit'" @click="editSubmit" :loading="btnLoading">提交</el-button>
+				<el-button type="primary" v-if="doType==='edit'" @click="editSubmit" :loading="btnLoading">提交
+				</el-button>
 			</div>
 		</el-dialog>
 
@@ -290,14 +315,15 @@
 		</el-dialog>
 
 		<!-- 商品Excel文件导入 -->
-		<el-dialog title="【商品】Excel文件导入" :visible.sync="drModal" :close-on-click-modal="false" :before-close="closeDrModal"
-		 width="30%">
+		<el-dialog title="【商品】Excel文件导入" :visible.sync="drModal" :close-on-click-modal="false"
+			:before-close="closeDrModal" width="30%">
 			<el-form ref="drForm" class="txt-c">
 				<el-link type="primary" class="mb20" :underline="false" href="/template/商品导入模板.xlsx">
 					<el-button size="mini" type="primary">下载商品导入Excel模板</el-button>
 				</el-link>
-				<el-upload ref="upload" :limit="1" drag action="/api/ProductManage/ImportExcel" multiple :on-success="handleAvatarSuccess"
-				 :on-error="handleError" :before-upload="beforeAvatarUpload" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+				<el-upload ref="upload" :limit="1" drag action="/api/ProductManage/ImportExcel" multiple
+					:on-success="handleAvatarSuccess" :on-error="handleError" :before-upload="beforeAvatarUpload"
+					accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
 					<i class="el-icon-upload"></i>
 					<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em>
 						<p class="danger">只能上传规范的Excel文件</p><br>
@@ -353,13 +379,16 @@
 	import size from './size.vue'
 	import format from './format.vue'
 
+	import draggable from "vuedraggable"
+
 	export default {
 		name: 'product',
 		components: {
 			quillEditor,
 			color,
 			size,
-			format
+			format,
+			draggable
 		},
 		data() {
 			return {
@@ -411,10 +440,9 @@
 					free: -1
 				},
 				drModal: false,
-				fileListAdd: [],
 				hideUploadAdd: false,
-				fileListData: [],
-				disUpload: false,
+				allImage: [],
+				isActive: null,
 				editorOption: {
 					placeholder: '',
 					theme: 'snow',
@@ -689,8 +717,7 @@
 				_this.editForm.description = row.ProductDescribe
 				_this.editForm.hot = row.Hot
 				_this.editForm.free = row.Free
-
-				//图片转换为 url:'xxx' 格式才能回显
+				//图片回显 字符串转数组
 				let img = ''
 				if (row.ProductUrl) {
 					if (row.Subgraph) {
@@ -699,17 +726,11 @@
 						img = row.ProductUrl
 					}
 					let imgArr = img.split(',')
-					let formatImgArr = []
-					for (let x in imgArr) {
-						let obj = new Object()
-						obj.url = imgArr[x]
-						formatImgArr.push(obj)
+					_this.allImage = imgArr
+					if (imgArr.length >= 6) {
+						this.hideUploadAdd = true
 					}
-					_this.fileListAdd = formatImgArr //赋值给图片上传控件回显数据
-					_this.fileListData = formatImgArr //记录获取到的原始数据
 				}
-				_this.disUpload = true //修改时默认先禁用图片上传功能
-				_this.hideUploadAdd = true //隐藏图片上传控件
 			},
 
 			//关闭新增编辑弹窗
@@ -739,26 +760,8 @@
 					hot: -1,
 					free: -1
 				}
-				_this.fileListAdd = []
+				_this.allImage = []
 				_this.hideUploadAdd = false
-				_this.fileListData = []
-				_this.disUpload = false
-			},
-
-			//编辑页面打开图片编辑功能
-			editImg() {
-				let _this = this
-				_this.disUpload = false
-				_this.fileListAdd = []
-				_this.hideUploadAdd = false
-			},
-
-			//编辑页面重置图片的回显
-			resetImg() {
-				let _this = this
-				_this.disUpload = true
-				_this.fileListAdd = _this.fileListData
-				_this.hideUploadAdd = true
 			},
 
 			//新增提交
@@ -804,10 +807,11 @@
 						params.append('UserId', _this.editForm.code)
 						params.append('Hot', _this.editForm.hot)
 						params.append('Free', _this.editForm.free)
-						_this.fileListAdd.map(item => {
-							params.append("image", item.raw);
-						})
-
+						let allImage = _this.allImage
+						let mainImg = allImage[0]
+						let otherImg = allImage.slice(1)
+						params.append('ProductUrl', mainImg)
+						params.append('Image', otherImg)
 						productAdd(params).then(res => {
 							_this.btnLoading = false
 							_this.closeModal()
@@ -863,10 +867,11 @@
 						params.append('UserId', _this.editForm.code)
 						params.append('Hot', _this.editForm.hot)
 						params.append('Free', _this.editForm.free)
-						_this.fileListAdd.map(item => {
-							params.append("image", item.raw);
-						});
-
+						let allImage = _this.allImage
+						let mainImg = allImage[0]
+						let otherImg = allImage.slice(1)
+						params.append('ProductUrl', mainImg)
+						params.append('Image', otherImg)
 						productEdit(params).then(res => {
 							_this.btnLoading = false
 							_this.closeModal()
@@ -920,24 +925,49 @@
 				}).catch(() => {})
 			},
 
-			// 商品图片上传
-			handleAddChange(file, fileList) {
-				const isLt5M = file.size / 1024 / 1024 < 5;
-				if (!isLt5M) {
-					this.$message.error('图片不能大于5M');
-					fileList.splice(-1, 1);
-				} else {
-					this.fileListAdd = fileList;
+			//图片上传
+			handleAvatarSuccessImg(res, file, fileList) {
+				let _this = this
+				if (res.data) {
+					file.url = res.data
+					_this.allImage.push(file.url)
 				}
-				// 上传文件>=限制个数时隐藏上传组件
-				if (fileList.length >= 6) {
-					this.hideUploadAdd = true;
+				if (_this.allImage.length >= 6) {
+					_this.hideUploadAdd = true
 				}
+				this.$message.success('图片上传成功！')
 			},
-			// 移除文件
-			handleAddRemove(file, fileList) {
-				this.fileListAdd = fileList
-				this.hideUploadAdd = false;
+
+			handleErrorImg(res) {
+				this.$message.error('图片上传失败！')
+			},
+			beforeAvatarUploadImg(file) {
+				const isJPG = file.type === 'image/jpeg';
+				const isPNG = file.type === 'image/png';
+				const isGIF = file.type === 'image/gif';
+				const isBMP = file.type === 'image/bmp';
+				const isLt5M = file.size / 1024 / 1024 < 5;
+				if (!isJPG && !isPNG && !isGIF && !isBMP) {
+					this.$message.error('上传图片必须是JPG/PNG/GIF/BMP 格式!');
+				} else if (!isLt5M) {
+					this.$message.error('上传图片大小不能超过 5MB!');
+				}
+				return (isJPG || isPNG || isGIF || isBMP) && isLt5M;
+			},
+			onRemoveHandler(index) {
+				this.hideUploadAdd = false
+				this.allImage = this.allImage.filter((v, i) => {
+					return i !== index
+				})
+			},
+
+			// 鼠标移入
+			mouseEnter(index) {
+				this.isActive = index
+			},
+			//鼠标移出
+			mouseLeave() {
+				this.isActive = null
 			},
 
 			//查看大图
@@ -961,7 +991,8 @@
 			},
 			beforeAvatarUpload(file) {
 				const isXLS = file.type === 'application/vnd.ms-excel';
-				const isSLSX = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+				const isSLSX = file.type ===
+					'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 				if (!isXLS && !isSLSX) {
 					this.$message.error('上传的文件必须为Excel');
 				}

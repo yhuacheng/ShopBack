@@ -81,6 +81,29 @@ $color-aside: #324157; //左侧菜单背景色
 	color: #F56C6C;
 }
 
+.drag-li{
+	float: left;
+	list-style: none;
+	cursor: move;
+}
+
+.drag-img{
+	width: 150px;
+	margin-right: 15px;
+}
+
+.drag-del{
+	background: rgba(0,0,0,0.3);
+	color: #FFFFFF;
+	cursor: pointer;
+	width: 150px;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	position: absolute;
+	top: 0;
+}
+
 /* 鼠标移入表格行 */
 .el-table__row {
 	cursor: pointer;
