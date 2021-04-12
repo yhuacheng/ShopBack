@@ -5,7 +5,11 @@ import 'element-ui/lib/theme-chalk/index.css'
 import '@/assets/css/style.scss'
 import router from './routes'
 
+import uploader from 'vue-simple-uploader'
+
 Vue.use(ElementUI)
+
+Vue.use(uploader)
 
 Vue.prototype.$IMGURL = 'http://47.112.217.146:90' //统一设置页面上图片URL路径入口（前台图片）
 

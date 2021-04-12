@@ -104,6 +104,62 @@ $color-aside: #324157; //左侧菜单背景色
 	top: 0;
 }
 
+.addImg-icon{
+	background-color: #fbfdff;
+	border: 1px dashed #c0ccda;
+	border-radius: 6px;
+	box-sizing: border-box;
+	width: 150px;
+	height: 150px;
+	cursor: pointer;
+	line-height: 150px;
+	vertical-align: top;
+	text-align: center;
+	i{
+		font-size: 28px;
+		color: #8c939d;
+	}
+}
+
+.file-list-box{
+	border: 1px solid #f1f1f1;
+	padding: 15px;
+	margin-bottom: 15px;
+	ul{
+		list-style: none;
+		li{
+			float: left;
+			width: 120px;
+			padding: 10px 5px;
+			cursor: pointer;
+			span{
+				margin-left: 5px;
+			}
+		}
+	}
+}
+
+.img-list-box{
+	border: 1px solid #f1f1f1;
+	padding: 15px;
+	.img-list{
+		width: 100px; 
+		height: 100px;
+		padding: 5px;
+	}
+	.check-all-box{
+		margin-left: 15px;
+		margin-bottom: 15px;
+	}
+	.check-box{
+		.el-checkbox__input{
+			position: absolute;
+			top: 5px;
+			left: 15px;
+		}
+	}
+}
+
 /* 鼠标移入表格行 */
 .el-table__row {
 	cursor: pointer;
@@ -452,6 +508,31 @@ body {
 /* 多图上传组件相关样式 */
 .hide .el-upload--picture-card {
 	display: none;
+}
+
+/* 文件夹上传相关样式 */
+.folder-main{
+   margin: 10px auto;
+	.uploader {
+    padding: 15px;
+    margin: 20px auto 0;
+    font-size: 14px;
+    .uploader-btn {
+        margin-right: 4px;
+        color: #fff;
+        padding: 6px 16px;
+    }
+    .updir{
+        border: 1px solid #409eff;
+        background: #409eff;
+    }
+    .uploader-list {
+        max-height: 440px;
+        overflow: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+	}
 }
 
 /* 富文本编辑器相关样式 */

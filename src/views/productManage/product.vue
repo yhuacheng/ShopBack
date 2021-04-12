@@ -54,7 +54,8 @@
 					<el-button size="small" @click="resetSearch">重置</el-button>
 					<el-button size="small" type="primary" @click="handleAdd">新增</el-button>
 					<el-button type="warning" size="small" @click="exportExcel">导出</el-button>
-					<el-button type="danger" size="small" @click="drModal=true">导入商品</el-button>
+					<el-button type="danger" size="small" @click="drModal=true">导入商品信息</el-button>
+					<el-button type="danger" size="small" @click="drFolderModal=true">导入商品图片</el-button>
 					<el-button size="small" type="primary" @click="handleColor" :disabled="selsData.length!=1">商品颜色
 					</el-button>
 					<el-button size="small" type="primary" @click="handleSize" :disabled="selsData.length!=1">商品尺码
@@ -163,13 +164,8 @@
 									</div>
 								</li>
 							</draggable>
-							<el-upload class="avatar-uploader" name="image" action="/api/ProductManage/ProductPictures"
-								list-type="picture-card" :on-success="handleAvatarSuccessImg" :on-error="handleErrorImg"
-								:before-upload="beforeAvatarUploadImg" accept="image/jpeg,image/png,image/gif,image/bmp"
-								:limit="6" :show-file-list="false" :class="{'hide':hideUploadAdd}">
-								<i class="el-icon-plus"></i>
-								<div class="el-upload__tip warning" slot="tip">注：最多6张，第1张为封面</div>
-							</el-upload>
+							<li class="drag-li addImg-icon" @click="imgModal = true" v-show="allImage.length<6"><i
+									class="el-icon-plus"></i></li>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
@@ -332,6 +328,70 @@
 			</el-form>
 		</el-dialog>
 
+		<!-- 商品图片导入(文件夹导入) -->
+		<el-dialog title="【商品】图片导入" :visible.sync="drFolderModal" width="30%">
+			<div class="folder-main">
+				<div class="txt-c info">温馨提示：可将文件拖动到灰色区域上传</div>
+				<div class="txt-c danger mt10">特别注意：文件夹层次格式 xxx / asin / xxx.jpg</div>
+				<uploader :options="options" :fileStatusText="fileStatusText" class="uploader">
+					<uploader-unsupport></uploader-unsupport>
+					<uploader-drop class="txt-c">
+						<uploader-btn class="updir" :directory="true"><i class="el-icon-folder-opened"></i> 上传商品图片文件夹
+						</uploader-btn>
+					</uploader-drop>
+					<uploader-list></uploader-list>
+				</uploader>
+			</div>
+		</el-dialog>
+
+		<el-dialog title="【商品】图片选择" :visible.sync="imgModal" width="60%">
+			<el-form :inline="true" :model="searchImgForm">
+				<div class="txt-c">
+					<el-form-item label="图片文件夹检索">
+						<el-input size="small" v-model="searchImgForm.asin" @keyup.enter.native="searchDataImg"
+							placeholder="请输入商品ASIN">
+						</el-input>
+					</el-form-item>
+					<el-form-item>
+						<el-button size="small" @click="searchDataImg">查询</el-button>
+						<el-button size="small" @click="resetSearchImg">重置</el-button>
+					</el-form-item>
+				</div>
+			</el-form>
+			<div class="file-list-box">
+				<ul>
+					<li v-for="(item, index) in imgAsinData" :key="index" @click="clickAsin(item)">
+						<div v-show="activeFolder!=item">
+							<i class="el-icon-folder warning"></i>
+							<span class="info">{{item}}</span>
+						</div>
+						<div v-show="activeFolder==item">
+							<i class="el-icon-folder-opened danger"></i>
+							<span class="danger">{{item}}</span>
+						</div>
+					</li>
+				</ul>
+				<p style="clear: both;"></p>
+			</div>
+			<div class="img-list-box" v-if="imgUrlData.length>0">
+				<el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange"
+					class="check-all-box">快捷多选（最多选6个）</el-checkbox>
+				<el-checkbox-group v-model="checkList" @change="handleCheckedChange" :max="6" class="check-box">
+					<span v-for="(item, index) in imgUrlData" :key="index">
+						<el-checkbox :label="item">
+							<el-image class="img-list" :src="item">
+							</el-image>
+						</el-checkbox>
+					</span>
+				</el-checkbox-group>
+			</div>
+			<div slot="footer" class="dialog-footer">
+				<div class="txt-c">
+					<el-button type="primary" @click="selectImg" :disabled="checkList.length==0">确定</el-button>
+				</div>
+			</div>
+		</el-dialog>
+
 		<!-- 颜色 -->
 		<el-dialog :title="title" :visible.sync="colorModal" width="70%">
 			<color :productId='productId' v-if="colorModal"></color>
@@ -365,7 +425,8 @@
 		countryList,
 		typeList,
 		discountsType,
-		levelScoreList
+		levelScoreList,
+		imgList
 	} from '@/api/api'
 
 	import {
@@ -409,6 +470,12 @@
 				selectId: '',
 				productId: '',
 				discountDis: false,
+				imgData: [],
+				imgAsinData: [],
+				imgUrlData: [],
+				activeFolder: null,
+				checkAll: false,
+				isIndeterminate: false,
 				searchForm: {
 					name: '',
 					country: '0',
@@ -418,6 +485,10 @@
 					hotState: '0',
 					freeState: '0'
 				},
+				searchImgForm: {
+					asin: ''
+				},
+				checkList: [],
 				editForm: {
 					name: '',
 					country: '',
@@ -440,7 +511,7 @@
 					free: -1
 				},
 				drModal: false,
-				hideUploadAdd: false,
+				drFolderModal: false,
 				allImage: [],
 				isActive: null,
 				editorOption: {
@@ -452,6 +523,7 @@
 				colorModal: false,
 				sizeModal: false,
 				formatModal: false,
+				imgModal: false,
 				rules: {
 					name: {
 						required: true,
@@ -543,6 +615,20 @@
 							trigger: 'blur'
 						}
 					]
+				},
+				//商品图片文件夹上传相关参数
+				options: {
+					target: '/api/ProductManage/UploadFile',
+					testChunks: false,
+					chunkSize: 1024 * 1024 * 5, //5MB
+					simultaneousUploads: 1, //并发上传数
+				},
+				fileStatusText: {
+					success: '上传成功',
+					error: '上传出错了',
+					uploading: '上传中...',
+					paused: '暂停',
+					waiting: '等待中...'
 				}
 			}
 		},
@@ -562,6 +648,7 @@
 			this.getTypeData()
 			this.getDisTypeData()
 			this.getLevelData()
+			this.getImgData()
 		},
 		methods: {
 			// 获取列表数据
@@ -659,6 +746,79 @@
 				}).catch((e) => {})
 			},
 
+			//商品图片列表数据
+			getImgData() {
+				let _this = this
+				let params = {
+					ASIN: _this.searchImgForm.asin
+				}
+				imgList(params).then(res => {
+					let data = res.result
+					_this.imgData = data
+					let asin = data.map(item => item.ASIN)
+					_this.imgAsinData = [...new Set(asin)]
+				}).catch((e) => {})
+			},
+
+			//查询图片文件夹
+			searchDataImg() {
+				let _this = this
+				_this.getImgData()
+				_this.clearImgModal()
+			},
+
+			//重置查询图片文件夹
+			resetSearchImg() {
+				let _this = this
+				_this.searchImgForm.asin = ''
+				_this.getImgData()
+				_this.clearImgModal()
+			},
+
+			//查询文件夹下的图片
+			clickAsin(asin) {
+				let _this = this
+				_this.clearImgModal()
+				_this.activeFolder = asin
+				let imgData = _this.imgData
+				let url = []
+				for (let x in imgData) {
+					if (imgData[x].ASIN == asin) {
+						url.push(imgData[x].ImgUrl)
+					}
+				}
+				_this.imgUrlData = url
+			},
+
+			//图片全选
+			handleCheckAllChange(val) {
+				this.checkList = val ? this.imgUrlData.slice(0, 6) : []
+				this.isIndeterminate = false
+			},
+			handleCheckedChange(value) {
+				let checkedCount = value.length
+				this.checkAll = checkedCount === this.imgUrlData.length
+				this.isIndeterminate = checkedCount > 0 && checkedCount < this.imgUrlData.length
+			},
+
+			//确定选择商品图片
+			selectImg() {
+				let _this = this
+				let checkList = _this.checkList
+				_this.allImage = checkList
+				_this.imgModal = false
+			},
+
+			//清空图片选择框内容
+			clearImgModal() {
+				let _this = this
+				_this.activeFolder = null
+				_this.isIndeterminate = false
+				_this.checkAll = false
+				_this.checkList = []
+				_this.imgUrlData = []
+			},
+
 			//查询
 			searchData() {
 				let _this = this
@@ -727,9 +887,6 @@
 					}
 					let imgArr = img.split(',')
 					_this.allImage = imgArr
-					if (imgArr.length >= 6) {
-						this.hideUploadAdd = true
-					}
 				}
 			},
 
@@ -761,7 +918,7 @@
 					free: -1
 				}
 				_this.allImage = []
-				_this.hideUploadAdd = false
+				_this.clearImgModal()
 			},
 
 			//新增提交
@@ -925,37 +1082,8 @@
 				}).catch(() => {})
 			},
 
-			//图片上传
-			handleAvatarSuccessImg(res, file, fileList) {
-				let _this = this
-				if (res.data) {
-					file.url = res.data
-					_this.allImage.push(file.url)
-				}
-				if (_this.allImage.length >= 6) {
-					_this.hideUploadAdd = true
-				}
-				this.$message.success('图片上传成功！')
-			},
-
-			handleErrorImg(res) {
-				this.$message.error('图片上传失败！')
-			},
-			beforeAvatarUploadImg(file) {
-				const isJPG = file.type === 'image/jpeg';
-				const isPNG = file.type === 'image/png';
-				const isGIF = file.type === 'image/gif';
-				const isBMP = file.type === 'image/bmp';
-				const isLt5M = file.size / 1024 / 1024 < 5;
-				if (!isJPG && !isPNG && !isGIF && !isBMP) {
-					this.$message.error('上传图片必须是JPG/PNG/GIF/BMP 格式!');
-				} else if (!isLt5M) {
-					this.$message.error('上传图片大小不能超过 5MB!');
-				}
-				return (isJPG || isPNG || isGIF || isBMP) && isLt5M;
-			},
+			//商品图片移除
 			onRemoveHandler(index) {
-				this.hideUploadAdd = false
 				this.allImage = this.allImage.filter((v, i) => {
 					return i !== index
 				})

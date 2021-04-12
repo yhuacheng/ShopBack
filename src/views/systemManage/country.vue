@@ -18,6 +18,7 @@
 		<el-table border :data="tableData" @selection-change="selsChange" v-loading="listLoading" style="width: 100%" id="tableData"
 		 ref='tableData'>
 			<el-table-column type="index" label="#" align="center"></el-table-column>
+			<el-table-column prop="Id" label="ID" align="center"></el-table-column>
 			<el-table-column prop="CountryName" label="国家" align="center"></el-table-column>
 			<el-table-column prop="CounteyShorthand" label="英文简称" align="center"></el-table-column>
 			<el-table-column prop="Currency" label="货币符号" align="center"></el-table-column>

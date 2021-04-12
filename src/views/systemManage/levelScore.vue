@@ -20,6 +20,7 @@
 		<el-table border :data="tableData" @selection-change="selsChange" v-loading="listLoading" style="width: 100%" id="tableData"
 		 ref='tableData'>
 			<el-table-column type="index" label="#" align="center"></el-table-column>
+			<el-table-column prop="Id" label="ID" align="center"></el-table-column>
 			<el-table-column prop="Grade" label="商品等级" align="center"></el-table-column>
 			<el-table-column prop="Score" label="等级分数" align="center"></el-table-column>
 			<el-table-column label="操作" align="center" width="100">

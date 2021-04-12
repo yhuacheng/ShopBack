@@ -16,6 +16,8 @@ export const productEdit = (params) => postForm('/api/ProductManage/UpdateProduc
 export const productState = (params) => post('/api/ProductManage/Upanddown', params) //商品上架下架
 export const productDelete = (params) => post('/api/ProductManage/DeleteProductManage', params) //商品删除
 
+export const imgList = (params) => get('/api/ProductManage/FilePathlist', params) //商品图片列表数据
+
 export const colorList = (params) => get('/api/ProductManage/GeteColorList', params) //颜色列表
 export const colorAdd = (params) => postForm('/api/ProductManage/AddColor', params) //颜色新增
 export const colorEdit = (params) => post('/api/ProductManage/UpdateProductColor', params) //颜色修改
