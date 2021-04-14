@@ -18,6 +18,8 @@ export const productDelete = (params) => post('/api/ProductManage/DeleteProductM
 
 export const imgList = (params) => get('/api/ProductManage/FilePathlist', params) //商品图片列表数据
 
+export const imgDel = (params) => post('/api/ProductManage/DeletePath', params) //删除图片
+
 export const colorList = (params) => get('/api/ProductManage/GeteColorList', params) //颜色列表
 export const colorAdd = (params) => postForm('/api/ProductManage/AddColor', params) //颜色新增
 export const colorEdit = (params) => post('/api/ProductManage/UpdateProductColor', params) //颜色修改

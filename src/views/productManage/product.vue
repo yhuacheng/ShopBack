@@ -29,14 +29,14 @@
 					</el-select>
 				</el-form-item>
 				<el-form-item label="状态">
-					<el-select v-model="searchForm.state" placeholder="请选择" size="small">
+					<el-select v-model="searchForm.state" placeholder="请选择" size="small" style="width: 140px;">
 						<el-option value="0" label="全部状态"></el-option>
 						<el-option value="-1" label="未上架"></el-option>
 						<el-option value="1" label="已上架"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="是否热卖">
-					<el-select v-model="searchForm.hotState" placeholder="请选择" size="small">
+					<el-select v-model="searchForm.hotState" placeholder="请选择" size="small" style="width: 140px;">
 						<el-option value="0" label="全部状态"></el-option>
 						<el-option value="-1" label="非热卖"></el-option>
 						<el-option value="1" label="热卖"></el-option>
@@ -47,6 +47,13 @@
 						<el-option value="0" label="全部状态"></el-option>
 						<el-option value="-1" label="非限免"></el-option>
 						<el-option value="1" label="限免"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="是否有图">
+					<el-select v-model="searchForm.imgState" placeholder="请选择" size="small">
+						<el-option value="0" label="全部"></el-option>
+						<el-option value="1" label="有图"></el-option>
+						<el-option value="2" label="无图"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item>
@@ -82,8 +89,8 @@
 			</el-table-column>
 			<el-table-column prop="ProductUrl" label="商品图" align="center">
 				<template slot-scope="scope">
-					<img style="width: 40px;height: 40px;" v-if="scope.row.ProductUrl" :src="scope.row.ProductUrl"
-						@click.stop="showImage(scope.row.ProductUrl)" />
+					<el-image style="width: 40px;height: 40px;" v-if="scope.row.ProductUrl" :src="scope.row.ProductUrl"
+						@click.stop="showImage(scope.row.ProductUrl)"></el-image>
 				</template>
 			</el-table-column>
 			<el-table-column prop="Type" label="内外单" align="center">
@@ -306,7 +313,7 @@
 		<!-- 图片大图预览 -->
 		<el-dialog title="图片预览" :visible.sync="ViewImageModal" width="60%">
 			<div class="txt-c">
-				<img :src='ViewImageUrl' />
+				<img style="max-width: 100%;" :src='ViewImageUrl' />
 			</div>
 		</el-dialog>
 
@@ -376,6 +383,9 @@
 			<div class="img-list-box" v-if="imgUrlData.length>0">
 				<el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange"
 					class="check-all-box">快捷多选（最多选6个）</el-checkbox>
+				<el-button type="text" @click="delImg" :disabled="checkList.length==0" class="ml20"><i
+						class="el-icon-delete danger"></i><span>删除图片</span>
+				</el-button>
 				<el-checkbox-group v-model="checkList" @change="handleCheckedChange" :max="6" class="check-box">
 					<span v-for="(item, index) in imgUrlData" :key="index">
 						<el-checkbox :label="item">
@@ -387,7 +397,7 @@
 			</div>
 			<div slot="footer" class="dialog-footer">
 				<div class="txt-c">
-					<el-button type="primary" @click="selectImg" :disabled="checkList.length==0">确定</el-button>
+					<el-button type="primary" @click="selectImg" :disabled="checkList.length==0">确定选择</el-button>
 				</div>
 			</div>
 		</el-dialog>
@@ -426,7 +436,8 @@
 		typeList,
 		discountsType,
 		levelScoreList,
-		imgList
+		imgList,
+		imgDel,
 	} from '@/api/api'
 
 	import {
@@ -483,7 +494,8 @@
 					type: '0',
 					state: '0',
 					hotState: '0',
-					freeState: '0'
+					freeState: '0',
+					imgState: '0'
 				},
 				searchImgForm: {
 					asin: ''
@@ -663,6 +675,7 @@
 					State: _this.searchForm.state,
 					HotState: _this.searchForm.hotState,
 					FreeState: _this.searchForm.freeState,
+					ProductUrlState: _this.searchForm.imgState,
 					pageIndex: _this.pageIndex,
 					pageSize: _this.pageSize
 				}
@@ -819,6 +832,24 @@
 				_this.imgUrlData = []
 			},
 
+			//删除图片
+			delImg() {
+				let _this = this
+				let path = _this.checkList
+				let num = path.length //选中的数量
+				_this.$confirm('确删除选中的【' + num + '】个商品图片吗？', '信息提示', {
+					type: 'warning'
+				}).then(() => {
+					let params = {
+						path: path
+					}
+					imgDel(params).then((res) => {
+						_this.getImgData()
+						_this.clearImgModal()
+					})
+				}).catch(() => {})
+			},
+
 			//查询
 			searchData() {
 				let _this = this
@@ -837,7 +868,8 @@
 						type: '0',
 						state: '0',
 						hotState: '0',
-						freeState: '0'
+						freeState: '0',
+						imgState: '0'
 					},
 					_this.getData()
 			},
@@ -965,7 +997,7 @@
 						params.append('Hot', _this.editForm.hot)
 						params.append('Free', _this.editForm.free)
 						let allImage = _this.allImage
-						let mainImg = allImage[0]
+						let mainImg = allImage.slice(0, 1)
 						let otherImg = allImage.slice(1)
 						params.append('ProductUrl', mainImg)
 						params.append('Image', otherImg)
@@ -1025,7 +1057,7 @@
 						params.append('Hot', _this.editForm.hot)
 						params.append('Free', _this.editForm.free)
 						let allImage = _this.allImage
-						let mainImg = allImage[0]
+						let mainImg = allImage.slice(0, 1)
 						let otherImg = allImage.slice(1)
 						params.append('ProductUrl', mainImg)
 						params.append('Image', otherImg)

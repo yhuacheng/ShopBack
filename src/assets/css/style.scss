@@ -122,10 +122,13 @@ $color-aside: #324157; //左侧菜单背景色
 }
 
 .file-list-box{
+	max-height: 300px;
+	overflow-y: auto;
 	border: 1px solid #f1f1f1;
-	padding: 15px;
 	margin-bottom: 15px;
 	ul{
+		margin: 0;
+		padding-left: 25px;
 		list-style: none;
 		li{
 			float: left;
