@@ -146,6 +146,14 @@
 		<el-col :span="24" class="toolbar">
 			<el-button size="small" type="success" @click="handleState(1)" :disabled="selsData.length<1">上架</el-button>
 			<el-button size="small" type="warning" @click="handleState(-1)" :disabled="selsData.length<1">下架</el-button>
+			<el-button size="small" type="primary" @click="handleHotFreeState(1,0)" :disabled="selsData.length<1">热卖
+			</el-button>
+			<el-button size="small" type="warning" @click="handleHotFreeState(-1,0)" :disabled="selsData.length<1">取消热卖
+			</el-button>
+			<el-button size="small" type="primary" @click="handleHotFreeState(0,1)" :disabled="selsData.length<1">限免
+			</el-button>
+			<el-button size="small" type="warning" @click="handleHotFreeState(0,-1)" :disabled="selsData.length<1">取消限免
+			</el-button>
 			<el-button size="small" type="danger" @click="handleDelete()" :disabled="selsData.length<1">删除</el-button>
 			<el-pagination style="float: right;" @size-change="handleSizeChange" @current-change="handleCurrentChange"
 				:current-page="pageIndex" :page-sizes="[10, 20, 50, 100,1000]" :page-size="10"
@@ -173,18 +181,6 @@
 							</draggable>
 							<li class="drag-li addImg-icon" @click="imgModal = true" v-show="allImage.length<6"><i
 									class="el-icon-plus"></i></li>
-						</el-form-item>
-					</el-col>
-					<el-col :span="12">
-						<el-form-item label="是否热卖" prop="hot">
-							<el-checkbox v-model="editForm.hot" :true-label="1" :false-label="-1">
-								热卖商品 （勾选此选项后，该商品会展示在页面的热卖商品栏目中）</el-checkbox>
-						</el-form-item>
-					</el-col>
-					<el-col :span="12">
-						<el-form-item label="是否限免" prop="hot">
-							<el-checkbox v-model="editForm.free" :true-label="1" :false-label="-1">
-								限免商品 （勾选此选项后，该商品会展示在页面的限免商品栏目中）</el-checkbox>
 						</el-form-item>
 					</el-col>
 					<el-col :span="24">
@@ -431,6 +427,7 @@
 		productAdd,
 		productEdit,
 		productState,
+		productHotFreeState,
 		productDelete,
 		countryList,
 		typeList,
@@ -1095,6 +1092,20 @@
 						_this.getData()
 					})
 				}).catch(() => {})
+			},
+
+			//热卖限免
+			handleHotFreeState(hot, free) {
+				let _this = this
+				let ids = _this.selsData.map(item => item.Id) //选中的数据
+				let params = {
+					Id: ids,
+					Hot: hot,
+					Free: free
+				}
+				productHotFreeState(params).then((res) => {
+					_this.getData()
+				})
 			},
 
 			//商品删除

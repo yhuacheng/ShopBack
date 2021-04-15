@@ -15,6 +15,7 @@ export const productAdd = (params) => postForm('/api/ProductManage/Add', params)
 export const productEdit = (params) => postForm('/api/ProductManage/UpdateProductManage', params) //商品修改
 export const productState = (params) => post('/api/ProductManage/Upanddown', params) //商品上架下架
 export const productDelete = (params) => post('/api/ProductManage/DeleteProductManage', params) //商品删除
+export const productHotFreeState = (params) => post('/api/ProductManage/ProductHotByFreeState', params) //商品热卖和限免
 
 export const imgList = (params) => get('/api/ProductManage/FilePathlist', params) //商品图片列表数据
 
