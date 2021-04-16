@@ -286,6 +286,16 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="6">
+						<el-form-item label="点赞数" prop="likeNum">
+							<el-input v-model="editForm.likeNum"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="商品备注">
+							<el-input v-model="editForm.remark"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="6">
 						<el-form-item label="客户编码" prop="code">
 							<el-input v-model="editForm.code"></el-input>
 						</el-form-item>
@@ -517,7 +527,9 @@
 					description: '',
 					code: '',
 					hot: -1,
-					free: -1
+					free: -1,
+					likeNum: '',
+					remark: ''
 				},
 				drModal: false,
 				drFolderModal: false,
@@ -623,7 +635,12 @@
 							message: '积分必须为正整数',
 							trigger: 'blur'
 						}
-					]
+					],
+					likeNum: {
+						pattern: /^[0-9]\d*$/,
+						message: '点赞数必须为大于等于0的整数',
+						trigger: 'blur'
+					}
 				},
 				//商品图片文件夹上传相关参数
 				options: {
@@ -906,6 +923,8 @@
 				_this.editForm.description = row.ProductDescribe
 				_this.editForm.hot = row.Hot
 				_this.editForm.free = row.Free
+				_this.editForm.likeNum = row.LikeNumber ? row.LikeNumber : 0
+				_this.editForm.remark = row.Remarks
 				//图片回显 字符串转数组
 				let img = ''
 				if (row.ProductUrl) {
@@ -944,7 +963,9 @@
 					description: '',
 					code: '',
 					hot: -1,
-					free: -1
+					free: -1,
+					likeNum: '',
+					remark: ''
 				}
 				_this.allImage = []
 				_this.clearImgModal()
@@ -993,6 +1014,8 @@
 						params.append('UserId', _this.editForm.code)
 						params.append('Hot', _this.editForm.hot)
 						params.append('Free', _this.editForm.free)
+						params.append('LikeNumber', _this.editForm.likeNum)
+						params.append('Remarks', _this.editForm.remark)
 						let allImage = _this.allImage
 						let mainImg = allImage.slice(0, 1)
 						let otherImg = allImage.slice(1)
@@ -1053,6 +1076,8 @@
 						params.append('UserId', _this.editForm.code)
 						params.append('Hot', _this.editForm.hot)
 						params.append('Free', _this.editForm.free)
+						params.append('LikeNumber', _this.editForm.likeNum)
+						params.append('Remarks', _this.editForm.remark)
 						let allImage = _this.allImage
 						let mainImg = allImage.slice(0, 1)
 						let otherImg = allImage.slice(1)

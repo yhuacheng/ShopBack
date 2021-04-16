@@ -59,10 +59,16 @@ export default new Router({
 			component: () => import('./views/Home.vue'),
 			name: '买家管理',
 			children: [{
-				path: '/buyer',
-				component: () => import('./views/buyerManage/buyer.vue'),
-				name: '买家列表'
-			}]
+					path: '/buyer',
+					component: () => import('./views/buyerManage/buyer.vue'),
+					name: '买家列表'
+				},
+				{
+					path: '/like',
+					component: () => import('./views/buyerManage/like.vue'),
+					name: '买家点赞'
+				}
+			]
 		},
 		{
 			path: '/',
