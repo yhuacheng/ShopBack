@@ -163,6 +163,10 @@ $color-aside: #324157; //左侧菜单背景色
 	}
 }
 
+.el-upload-list__item{
+  transition: none !important;
+}
+
 /* 鼠标移入表格行 */
 .el-table__row {
 	cursor: pointer;

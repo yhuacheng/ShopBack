@@ -6,7 +6,8 @@
 				<el-form-item label="国家" prop="country">
 					<el-select v-model="searchForm.country" placeholder="请选择国家" size="small">
 						<el-option value="0" label="全部国家"></el-option>
-						<el-option v-for="item in countryData" :key="item.Id" :label="item.CountryName" :value="item.Id"></el-option>
+						<el-option v-for="item in countryData" :key="item.Id" :label="item.CountryName"
+							:value="item.Id"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item>
@@ -18,16 +19,18 @@
 		</el-col>
 
 		<!--列表-->
-		<el-table border :data="tableData" @selection-change="selsChange" v-loading="listLoading" style="width: 100%" id="tableData"
-		 ref='tableData'>
+		<el-table border :data="tableData" @selection-change="selsChange" v-loading="listLoading" style="width: 100%"
+			id="tableData" ref='tableData'>
 			<el-table-column type="index" label="#" align="center"></el-table-column>
 			<el-table-column prop="Image" label="轮播图" align="center">
 				<template slot-scope="scope">
-					<img style="width: 120px;height: 40px;" v-if="scope.row.Image" :src="scope.row.Image" @click.stop="showImage(scope.row.Image)" />
+					<img style="width: 120px;height: 40px;" v-if="scope.row.Image" :src="scope.row.Image"
+						@click.stop="showImage(scope.row.Image)" />
 				</template>
 			</el-table-column>
 			<el-table-column prop="CountryName" label="国家" align="center"></el-table-column>
 			<el-table-column prop="Link" label="链接" align="center"></el-table-column>
+			<el-table-column prop="Sorts" label="排序" align="center"></el-table-column>
 			<el-table-column prop="State" label="状态" align="center">
 				<template v-slot="scope">
 					<span class="success" v-if="scope.row.State=='1'">正常</span>
@@ -44,28 +47,35 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
 			<el-pagination style="float: right;" @size-change="handleSizeChange" @current-change="handleCurrentChange"
-			 :current-page="pageIndex" :page-sizes="[10, 20, 50, 100]" :page-size="10" layout="total, sizes, prev, pager, next, jumper"
-			 :total="total">
+				:current-page="pageIndex" :page-sizes="[10, 20, 50, 100]" :page-size="10"
+				layout="total, sizes, prev, pager, next, jumper" :total="total">
 			</el-pagination>
 		</el-col>
 
 		<!--编辑界面-->
-		<el-dialog :title="title" :visible.sync="editModal" :close-on-click-modal="false" :before-close="closeModal" width="30%">
+		<el-dialog :title="title" :visible.sync="editModal" :close-on-click-modal="false" :before-close="closeModal"
+			width="30%">
 			<el-form :model="editForm" label-width="60px" :rules="rules" ref="editForm">
 				<el-form-item label='轮播图' prop='image' class="banner">
-					<el-upload action=" " list-type="picture-card" multiple :limit="1" :file-list="fileListAdd" :on-remove="handleAddRemove"
-					 :on-change="handleAddChange" :auto-upload="false" accept="image/jpeg,image/png,image/gif,image/bmp" :class="{'hide':hideUploadAdd}">
+					<el-upload action=" " list-type="picture-card" multiple :limit="1" :file-list="fileListAdd"
+						:on-remove="handleAddRemove" :on-change="handleAddChange" :auto-upload="false"
+						accept="image/jpeg,image/png,image/gif,image/bmp" :class="{'hide':hideUploadAdd}">
 						<i class="el-icon-plus"></i>
 						<div class="el-upload__tip warning" slot="tip">注意：图片不能大于5M，建议上传 1440*360 尺寸</div>
 					</el-upload>
 				</el-form-item>
 				<el-form-item label="国家" prop="country">
 					<el-select v-model="editForm.country" placeholder="请选择国家" class="w100">
-						<el-option v-for="item in countryData" :key="item.Id" :label="item.CountryName" :value="item.Id"></el-option>
+						<el-option v-for="item in countryData" :key="item.Id" :label="item.CountryName"
+							:value="item.Id"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="链接" prop="url">
 					<el-input v-model="editForm.url"></el-input>
+				</el-form-item>
+				<el-form-item label="排序" prop="sorts">
+					<el-input v-model="editForm.sorts"></el-input>
+					<div class="warning">注意：数字越小排序越靠前</div>
 				</el-form-item>
 				<el-form-item v-if="doType==='edit'" label="状态" prop="state">
 					<el-radio-group v-model="editForm.state">
@@ -77,14 +87,15 @@
 			<div slot="footer" class="dialog-footer">
 				<el-button @click="closeModal">取消</el-button>
 				<el-button type="primary" v-if="doType==='add'" @click="addSubmit" :loading="btnLoading">提交</el-button>
-				<el-button type="primary" v-if="doType==='edit'" @click="editSubmit" :loading="btnLoading">提交</el-button>
+				<el-button type="primary" v-if="doType==='edit'" @click="editSubmit" :loading="btnLoading">提交
+				</el-button>
 			</div>
 		</el-dialog>
 
 		<!-- 图片大图预览 -->
 		<el-dialog title="图片预览" :visible.sync="ViewImageModal" width="60%">
 			<div class="txt-c">
-				<img :src='ViewImageUrl' />
+				<el-image :src='ViewImageUrl' style="max-width: 100%;"></el-image>
 			</div>
 		</el-dialog>
 
@@ -121,6 +132,7 @@
 				editForm: {
 					country: '',
 					url: '',
+					sorts: '',
 					state: 1
 				},
 				fileListAdd: [],
@@ -132,7 +144,18 @@
 						required: true,
 						message: '请选择国家',
 						trigger: 'blur'
-					}
+					},
+					sorts: [{
+							required: true,
+							message: '请输入轮播图顺序',
+							trigger: 'blur'
+						},
+						{
+							pattern: /^[1-9]\d*$/,
+							message: '排序必须为正整数',
+							trigger: 'blur'
+						}
+					]
 				}
 			}
 		},
@@ -204,6 +227,7 @@
 				_this.editModal = true
 				_this.editForm.country = Number(row.CountryId)
 				_this.editForm.url = row.Link
+				_this.editForm.sorts = row.Sorts
 				_this.editForm.state = Number(row.State)
 
 				//图片转换为 url:'xxx' 格式才能回显
@@ -229,6 +253,7 @@
 				_this.editForm = {
 					country: '',
 					url: '',
+					sorts: '',
 					state: 1
 				}
 				_this.fileListAdd = []
@@ -246,6 +271,7 @@
 						let params = new FormData();
 						params.append('CountryId', _this.editForm.country)
 						params.append('Link', _this.editForm.url)
+						params.append('Sorts', _this.editForm.sorts)
 						_this.fileListAdd.map(item => {
 							params.append("image", item.raw);
 						})
@@ -273,6 +299,7 @@
 						params.append('Id', _this.selectId)
 						params.append('CountryId', _this.editForm.country)
 						params.append('Link', _this.editForm.url)
+						params.append('Sorts', _this.editForm.sorts)
 						params.append('State', _this.editForm.state)
 						_this.fileListAdd.map(item => {
 							params.append("image", item.raw);
